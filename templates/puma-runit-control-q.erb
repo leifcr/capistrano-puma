@@ -1,0 +1,5 @@
+#!/bin/bash --login
+# The command used when puma is asked to quit/stop/exit, overridden here, as runit normal signal will not work with puma
+<% c = Capistrano::BaseHelper::get_capistrano_instance %>
+cd '<%= c.current_path %>'
+RAILS_ENV=<%= Capistrano::BaseHelper.environment %> exec <%= c.fetch(:puma_control) %> -S <%= c.fetch(:puma_state_file) %> stop

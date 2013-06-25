@@ -1,0 +1,9 @@
+#!/bin/bash --login
+# Start puma service
+<% c = Capistrano::BaseHelper::get_capistrano_instance %>
+# remove pumactl.sock and puma.sock if existing, as puma doesn't overwrite and files may be 
+# existing after server crash or if puma wasnt shutdown properly.
+rm -f "<%= c.fetch(:puma_socket_file) %>"
+rm -f "<%= c.fetch(:puma_control_file) %>"
+cd '<%= c.current_path %>'
+RAILS_ENV=<%= Capistrano::BaseHelper.environment %> exec <%= c.fetch(:puma_bin) %> -C <%= c.fetch(:puma_remote_config) %>

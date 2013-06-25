@@ -1,0 +1,12 @@
+<% c = Capistrano::BaseHelper::get_capistrano_instance %>
+threads <%= c.fetch(:puma_min_threads) %>,<%= c.fetch(:puma_max_threads) %>
+bind "<%= c.fetch(:puma_socket_url) %>"
+pidfile "<%= c.fetch(:puma_pid_file) %>"
+state_path "<%= c.fetch(:puma_state_file) %>"
+environment "<%= "#{Capistrano::BaseHelper.environment}" %>"
+<%= "activate_control_app \"#{c.fetch(:puma_control_url)}\"" if c.fetch(:puma_activate_control_app) %>
+
+# TODO - fix restart block!
+# <%= "on_restart do"              if c.fetch(:puma_on_restart_active) %>
+# <%= "  puts \"Restarting puma\"" if c.fetch(:puma_on_restart_active) %>
+# <%= "end"                        if c.fetch(:puma_on_restart_active) %>

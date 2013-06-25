@@ -1,0 +1,10 @@
+#!/bin/sh -e
+<% c = Capistrano::BaseHelper::get_capistrano_instance %>
+# Log output for puma running on <%= c.fetch(:application) %> running as <%= c.fetch(:user) %>
+# make sure the log directory exists
+mkdir -p "<%= c.fetch(:puma_log_path) %>"
+# change path to the log directory
+cd "<%= c.fetch(:puma_log_path) %>"
+# start logging
+# exec chpst -u syslog svlogd -tt "<%= c.fetch(:puma_log_path) %>"
+exec svlogd -tt "<%= c.fetch(:puma_log_path) %>"
