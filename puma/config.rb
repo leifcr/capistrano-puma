@@ -1,7 +1,8 @@
 Capistrano::Configuration.instance(true).load do
   _cset :puma_runit_service_name, "puma"
-  _cset :puma_min_threads, 0
-  _cset :puma_max_threads, 16
+  _cset :puma_workers, 2 # Must use a minimum of 1 worker (cluster mode, else restart/stop fails in the state file?)
+  _cset :puma_min_threads, 2
+  _cset :puma_max_threads, 8
 
   _cset :puma_bin, 'bundle exec puma'
   _cset :puma_control, 'bundle exec pumactl'
