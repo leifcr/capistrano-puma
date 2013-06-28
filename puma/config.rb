@@ -20,7 +20,7 @@ Capistrano::Configuration.instance(true).load do
   _cset :puma_on_restart_active, true
 
   # Logging to path
-  _cset :puma_log_path, "/var/log/service/#{fetch(:user)}/#{fetch(:application)}/puma"
+  _cset :puma_log_path, defer {"/var/log/service/#{fetch(:user)}/#{fetch(:application)}_#{Capistrano::BaseHelper.environment}/puma"}
 
   # Configuration files
   _cset :puma_local_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../templates")), "puma-config.rb.erb")
