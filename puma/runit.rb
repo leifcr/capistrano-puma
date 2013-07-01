@@ -8,12 +8,13 @@ Capistrano::Configuration.instance(true).load do
   # enable service after update in case it has not been setup or is disabled
   # Service should probably be started as well?
   after "deploy:update", "puma:runit:enable"
+  before "puma:runit:setup", "puma:runit:flush_sockets"
+  after "puma:runit:quit", "puma:runit:stop"
 
   namespace :puma do
     namespace :runit do
       desc "Setup Puma runit-service"
       task :setup, :roles => :app do
-        puma.runit.flush_sockets
         Capistrano::BaseHelper.prepare_path(File.join(fetch(:shared_path), "sockets"), fetch(:user), fetch(:group))
 
         # Create puma configuration file
@@ -55,19 +56,14 @@ Capistrano::Configuration.instance(true).load do
 
       desc "Stop Puma runit-service"
       task :stop, :roles => :app, :on_error => :continue do
-        begin 
-          # have to use force-stop on failed stop, since puma might not terminate properly
-          Capistrano::RunitBase.control_service(puma_runit_service_name, "stop")
-        rescue
-          Capistrano::BaseHelper.get_capistrano_instance.say("Could not stop #{puma_runit_service_name} properly, trying force-stop.")
-          Capistrano::RunitBase.control_service(puma_runit_service_name, "force-stop")
-        end 
+        # have to use force-stop on failed stop, since puma might not terminate properly
+        # will wait 25 seconds for puma to shut down, to allow it to serve any on-going requests
+        Capistrano::RunitBase.control_service(puma_runit_service_name, "force-stop", false, "-w 25")
       end
 
       desc "Quit the puma runit-service"
       task :quit, :roles => :app, :on_error => :continue do
         Capistrano::RunitBase.control_service(puma_runit_service_name, "quit")
-        puma.runit.stop
       end
 
       desc "Restart Puma runit-service"
