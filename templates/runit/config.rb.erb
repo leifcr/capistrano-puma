@@ -1,5 +1,5 @@
 # Puma configuration for: <% c = Capistrano::BaseHelper::get_capistrano_instance %>
-# <%= "#{c.fetch(:application)} running as #{c.fetch(:user)} in environment #{Capistrano::BaseHelper.environment}"
+# <%= "#{c.fetch(:application)} running as #{c.fetch(:user)} in environment #{Capistrano::BaseHelper.environment}" %>
 workers <%= c.fetch(:puma_workers) %>
 threads <%= c.fetch(:puma_min_threads) %>, <%= c.fetch(:puma_max_threads) %>
 bind '<%= c.fetch(:puma_socket_url) %>'
