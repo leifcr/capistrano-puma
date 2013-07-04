@@ -10,7 +10,7 @@ Capistrano::Configuration.instance(true).load do
   # Control files
   _cset :puma_socket_file, "#{File.join(fetch(:sockets_path), "puma.sock")}"
   _cset :puma_socket_url,  "unix://#{fetch(:puma_socket_file)}"
-  _cset :puma_pid_file,    File.join(fetch(:pids_path),"#{app_server}.pid")
+  _cset :puma_pid_file,    File.join(fetch(:pids_path), "puma.pid")
   _cset :puma_state_file,  File.join(fetch(:sockets_path), "puma.state")
   _cset :puma_control_file, "#{File.join(fetch(:sockets_path), "pumactl.sock")}"
   _cset :puma_control_url, "unix://#{fetch(:puma_control_file)}"
