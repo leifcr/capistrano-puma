@@ -72,12 +72,12 @@ Capistrano::Configuration.instance(true).load do
         Capistrano::RunitBase.control_service(puma_runit_service_name, "2")
       end
       
-      desc "Flush puma sockets, as they can end up 'hanging around'"
+      desc "Flush Puma sockets, as they can end up 'hanging around'"
       task :flush_sockets, :roles => :app do
         run "rm -f #{fetch(:puma_socket_file)}; rm -f #{fetch(:puma_control_file)}"
       end
 
-      desc "Purge puma runit configuration"
+      desc "Purge Puma runit configuration"
       task :purge, :roles => :app, :on_error => :continue do
         Capistrano::RunitBase.force_control_service(puma_runit_service_name, "force-stop", true)
         Capistrano::RunitBase.purge_service(puma_runit_service_name)
