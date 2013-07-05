@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "capistrano-pumaio"
-  s.version = "0.0.2"
+  s.version = "0.0.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Leif Ringstad"]
@@ -23,10 +23,11 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "VERSION",
-    "capistrano-puma/config.rb",
-    "capistrano-puma/monit.rb",
-    "capistrano-puma/runit.rb",
-    "capistrano-pumaio.rb",
+    "capistrano-pumaio.gemspec",
+    "lib/capistrano/puma.rb",
+    "lib/capistrano/puma/config.rb",
+    "lib/capistrano/puma/monit.rb",
+    "lib/capistrano/puma/runit.rb",
     "templates/monit/puma.conf.erb",
     "templates/runit/config.rb.erb",
     "templates/runit/control-q.erb",
