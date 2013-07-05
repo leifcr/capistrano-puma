@@ -15,12 +15,13 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "capistrano-puma"
-  gem.homepage = "http://github.com/leifcr/capistrano-puma"
+  gem.homepage = "https://github.com/leifcr/capistrano-puma"
   gem.license = "MIT"
   gem.summary = %Q{Capistrano recipes for puma using runit and monit}
   gem.description = %Q{Capistrano recipes for puma using runit and monit.}
   gem.email = "leifcr@gmail.com"
   gem.authors = ["Leif Ringstad"]
+  gem.files.exclude ".ruby-*"
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
