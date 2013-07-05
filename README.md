@@ -8,13 +8,13 @@ This gem provides recipes for [Puma](http://puma.io) to setup runit and monit
 Add it to your Gemfile without requiring it
 
 ```ruby
-gem 'capistrano-pumaio', require: false
+gem 'capistrano-pumaio'
 ```
 
 In your deploy.rb:
 
 ```ruby
-require 'capistrano-pumaio'
+require 'capistrano/puma'
 ```
 
 
