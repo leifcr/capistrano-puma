@@ -1,3 +1,4 @@
+require 'capistrano/base_helper/base_helper'
 Capistrano::Configuration.instance(true).load do
   _cset :puma_runit_service_name, "puma"
   _cset :puma_workers, 2 # Must use a minimum of 1 worker (cluster mode, else restart/stop fails in the state file?)

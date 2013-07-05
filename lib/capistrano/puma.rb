@@ -6,6 +6,6 @@ def try_require(library)
   end
 end
 
-try_require 'capistrano-puma/config'
-try_require 'capistrano-puma/runit'
-try_require 'capistrano-puma/monit'
+try_require 'capistrano/puma/config'
+try_require 'capistrano/puma/runit'
+try_require 'capistrano/puma/monit'

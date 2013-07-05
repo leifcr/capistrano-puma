@@ -1,7 +1,6 @@
 # Puma - Runit
-
-require 'capistrano-base_helper/base_helper'
-require 'capistrano-base_helper/runit_base'
+require 'capistrano/puma/config'
+require 'capistrano/base_helper/runit_base'
 
 Capistrano::Configuration.instance(true).load do
   after "deploy:setup", "puma:runit:setup"
