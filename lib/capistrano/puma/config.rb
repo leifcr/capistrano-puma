@@ -24,15 +24,15 @@ Capistrano::Configuration.instance(true).load do
   _cset :puma_log_path, defer {"/var/log/service/#{fetch(:user)}/#{fetch(:application)}_#{Capistrano::BaseHelper.environment}/puma"}
 
   # Configuration files
-  _cset :puma_local_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../templates", "runit")), "config.rb.erb")
+  _cset :puma_local_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit")), "config.rb.erb")
 
   # The remote location of puma's config file. Used by runit when starting puma
   _cset :puma_remote_config, File.join(shared_path, "config", "puma.rb")
 
   # runit paths
-  _cset :puma_runit_local_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../templates", "runit", )), "run.erb")
-  _cset :puma_runit_control_q, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../templates", "runit")), "control-q.erb")
-  _cset :puma_runit_local_log_run, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../templates", "runit")), "log-run.erb")
+  _cset :puma_runit_local_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit", )), "run.erb")
+  _cset :puma_runit_control_q, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit")), "control-q.erb")
+  _cset :puma_runit_local_log_run, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit")), "log-run.erb")
 
   # monit configuration
   _cset :puma_monit_service_name,  defer { "#{fetch(:user)}_#{fetch(:application)}_#{Capistrano::BaseHelper.environment}_puma" }
@@ -43,6 +43,6 @@ Capistrano::Configuration.instance(true).load do
   _cset :puma_monit_cpu_alert_threshold,   "90% for 2 cycles"
   _cset :puma_monit_cpu_restart_threshold, "95% for 5 cycles"
 
-  _cset :puma_local_monit_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../templates", "monit")), "puma.conf.erb")
+  _cset :puma_local_monit_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "monit")), "puma.conf.erb")
 
 end
