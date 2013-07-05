@@ -1,6 +1,6 @@
 # Capistrano Recipes for Puma
 
-This gem provides recipes for puma to setup runit and monit
+This gem provides recipes for [Puma](http://puma.io) to setup runit and monit
 
 ## Usage
 
