@@ -29,8 +29,14 @@ Capistrano::Configuration.instance(true).load do
   # The remote location of puma's config file. Used by runit when starting puma
   _cset :puma_remote_config, File.join(shared_path, "config", "puma.rb")
 
+  # runit defaults
+  _cset :puma_restart_interval, defer {fetch(:runit_restart_interval)}
+  _cset :puma_restart_count, defer {fetch(:runit_restart_count)}
+  _cset :puma_autorestart_clear_interval, defer {fetch(:runit_autorestart_clear_interval)}
+
   # runit paths
-  _cset :puma_runit_local_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit", )), "run.erb")
+  _cset :puma_runit_local_run, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit", )), "run.erb")
+  _cset :puma_runit_local_finish, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit", )), "finish.erb")
   _cset :puma_runit_control_q, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit")), "control-q.erb")
   _cset :puma_runit_local_log_run, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit")), "log-run.erb")
 

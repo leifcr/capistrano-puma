@@ -22,7 +22,9 @@ Capistrano::Configuration.instance(true).load do
 
         # Create runit config
         Capistrano::RunitBase.create_service_dir(puma_runit_service_name)
-        Capistrano::BaseHelper::generate_and_upload_config(puma_runit_local_config, Capistrano::RunitBase.remote_run_config_path(puma_runit_service_name))
+        Capistrano::BaseHelper::generate_and_upload_config(puma_runit_local_run, Capistrano::RunitBase.remote_run_config_path(puma_runit_service_name))
+        Capistrano::BaseHelper::generate_and_upload_config(puma_runit_local_finish, Capistrano::RunitBase.remote_finish_config_path(puma_runit_service_name))
+
         #must use quit script for stop as well
         Capistrano::BaseHelper::generate_and_upload_config(puma_runit_control_q, Capistrano::RunitBase.remote_control_path(puma_runit_service_name, "q"))
         Capistrano::BaseHelper::generate_and_upload_config(puma_runit_control_q, Capistrano::RunitBase.remote_control_path(puma_runit_service_name, "s"))

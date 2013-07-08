@@ -1,0 +1,135 @@
+#!/bin/bash
+#
+# This finish file is originally from:
+# https://github.com/erwbgy/puppet-runit/blob/fde6006e6d400f0c99b6ff0b1b63094207dc8783/templates/service/finish.erb
+# Thanks to erwbgy!
+#
+# <% c = Capistrano::BaseHelper.get_capistrano_instance %>
+# Variable name setup
+<%
+exit_code   = "EXIT_CODE_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
+exit_status = "EXIT_STATUS_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
+min_auto_restart_interval         = "MIN_AUTO_RESTART_INTERVAL_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
+max_auto_restart_count            = "MAX_AUTO_RESTART_COUNT_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
+auto_restart_count_clear_interval = "AUTO_RESTART_COUNT_CLEAR_INTERVAL_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
+%>
+#
+# The following variables are set by Runit:
+#
+# <%= "#{exit_code}" %>: ./run's exit code
+#
+# <%= "#{exit_status}" %>: The least significant byte of the exit status as determined by
+#  waitpid(2); for instance it is 0 if ./run exited normally, and the signal
+#  number if ./run was terminated by a signal.
+#
+# The following configuration variables must be set:
+#
+# <%= "#{min_auto_restart_interval}" %>: The minimum delay (in seconds) between automatic restarts
+#
+# <%= "#{max_auto_restart_count}" %>: The maximum number of automatic restarts allowed
+#
+# <%= "#{auto_restart_count_clear_interval}" %>: Reset the restart count if
+#  <%= "#{auto_restart_count_clear_interval}" %> seconds have elapsed since the last
+#  automatic restart.
+#
+# Creates two new files in the service directory:
+#
+#   last_finish - the Unix time (seconds since 1970) when the ./finish script
+#                 last ran
+#
+#   restart_count - the number of automatic restarts that have taken place
+#
+# These files must be removed BEFORE the service is cleanly shut down.
+
+### Configuration
+
+# ./run's exit code
+<%= "#{exit_code}" %>=$1
+ 
+# The least significant byte of the exit status as determined by waitpid(2);
+# for instance it is 0 if ./run exited normally, and the signal number if
+# ./run was terminated by a signal.
+<%= "#{exit_status}" %>=$2
+ 
+# The minimum delay (in seconds) between automatic restarts
+<%= "#{min_auto_restart_interval}" %>=<%= c.fetch(:puma_restart_interval) %>
+ 
+# The maximum number of automatic restarts allowed
+<%= "#{max_auto_restart_count}" %>=<%= c.fetch(:puma_restart_count) %>
+ 
+# Reset the restart count if <%= "#{auto_restart_count_clear_interval}" %> seconds
+# have elapsed since the last automatic restart.
+<%= "#{auto_restart_count_clear_interval}" %>=<%= c.fetch(:puma_autorestart_clear_interval) %>
+
+export <%= "#{exit_code}" %>
+export <%= "#{exit_status}" %>
+export <%= "#{min_auto_restart_interval}" %>
+export <%= "#{max_auto_restart_count}" %>
+export <%= "#{auto_restart_count_clear_interval }" %>
+
+### Normally no changes should be made after this point
+ 
+echo "<%= "User: #{c.fetch(:user)} Application: #{c.fetch(:application)} Service: #{c.fetch(:puma_runit_service_name)}" %> finish; exit code: $<%= "#{exit_code}" %>; exit status: $<%= "#{exit_status}" %>"
+
+if test $<%= "#{exit_code}" %> -eq 0 -a $<%= "#{exit_status}" %> -eq 0
+then
+    echo "Clean shutdown."
+    sv down .
+    exit 0
+fi
+
+NOW=$(date +%s)
+
+# Determine when the finish script last ran
+if test -r last_finish
+then
+    LAST_FINISH=$(head -1 last_finish)
+    INTERVAL=$(expr $NOW - $LAST_FINISH)
+fi
+echo $NOW > last_finish
+
+# Remove the restart_count file if <%= "#{auto_restart_count_clear_interval}" %> seconds
+# have elapsed since the last automatic restart.
+if test $INTERVAL -gt $<%= "#{auto_restart_count_clear_interval}" %>
+then
+    echo "NOTICE: <%= "User: #{c.fetch(:user)} Application: #{c.fetch(:application)} Service: #{c.fetch(:puma_runit_service_name)}" %>"
+    echo "The last automatic restart was $INTERVAL seconds ago."
+    echo "Since this is greater than $<%= "#{auto_restart_count_clear_interval}" %> the restart count is being reset."
+    rm -f restart_count
+fi
+
+# Determine how many automatic restarts we have had
+# and then increment this value by one
+if test -r restart_count
+then
+    RESTART_COUNT=$(head -1 restart_count)
+    RESTART_COUNT=$(expr $RESTART_COUNT + 1)
+else
+    RESTART_COUNT=1
+fi
+echo $RESTART_COUNT > restart_count
+
+# Check that we have not exceeded the maximum number of automatic restarts
+if test $RESTART_COUNT -gt $<%= "#{max_auto_restart_count}" %>
+then
+    echo "WARNING: <%= "User: #{c.fetch(:user)} Application: #{c.fetch(:application)} Service: #{c.fetch(:puma_runit_service_name)}" %>"
+    echo "Reached the limit of $<%= "#{max_auto_restart_count}" %> automatic restarts."
+    echo "The last automatic restart was within $<%= "#{auto_restart_count_clear_interval}" %> seconds."
+    echo "Manual intervention required.  No further automatic restarts will be attempted."
+    sv down .
+    exit 0
+fi
+
+if test -n "$INTERVAL"
+then
+    SLEEP_TIME=$(expr $<%= "#{min_auto_restart_interval}" %> - $INTERVAL)
+    if test $SLEEP_TIME -gt 0
+    then
+        echo "NOTICE: Restart attempt $RESTART_COUNT for <%= "User: #{c.fetch(:user)} Application: #{c.fetch(:application)} Service: #{c.fetch(:puma_runit_service_name)}" %>"
+        echo "$INTERVAL seconds have elapsed since the last automatic restart."
+        echo "Sleeping for $SLEEP_TIME seconds before the next automatic restart ..."
+        sleep $SLEEP_TIME
+    fi
+fi
+
+exit 0
