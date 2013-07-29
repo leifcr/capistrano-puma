@@ -9,7 +9,7 @@ Capistrano::Configuration.instance(true).load do
   # Service should probably be started as well?
   after "deploy:update", "puma:runit:enable"
   before "puma:runit:setup", "puma:runit:flush_sockets"
-  after "puma:runit:quit", "puma:runit:stop"
+  before "puma:runit:quit", "puma:runit:stop"
 
   namespace :puma do
     namespace :runit do
