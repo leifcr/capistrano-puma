@@ -31,6 +31,15 @@ cap puma:monit:stop             # Stop monit services for puma (will also sto...
 cap puma:monit:unmonitor        # Purge puma monit configuration
 ```
 
+#### Setup in your deploy file
+
+You can add this to deploy.rb or env.rb in order to automatically start/stop puma using monit. It is not needed if you use runit to stop/start/restart the service.
+
+```ruby
+before "monit:unmonitor", "puma:monit:stop"
+after  "monit:monitor",   "puma:monit:start"
+```
+
 ### Runit
 
 ```ruby
@@ -44,6 +53,20 @@ cap puma:runit:restart          # Restart Puma runit-service
 cap puma:runit:setup            # Setup Puma runit-service
 cap puma:runit:start            # Start Puma runit-service
 cap puma:runit:stop             # Stop Puma runit-service
+```
+
+#### Setup in your deploy file
+
+To use runit to start/stop/restart services instead of monit, use the example below.
+
+```ruby
+# stop before deployment 
+# (must be done after monit has stopped monitoring the task. If not, the service will be restarted by monit)
+before "monit:unmonitor", "puma:runit:stop"
+# start before enabling monitor
+before  "monit:monitor",   "puma:runit:start"
+# restart before enabling monitor / monitoring has been started
+before  "monit:monitor",   "puma:runit:restart"
 ```
 
 ## Configuration
