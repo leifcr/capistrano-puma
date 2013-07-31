@@ -8,17 +8,29 @@ Capistrano::Configuration.instance(true).load do
   # enable service after update in case it has not been setup or is disabled
   # Service should probably be started as well?
   after "deploy:update", "puma:runit:enable"
-  before "puma:runit:setup", "puma:runit:flush_sockets"
+  before "puma:runit:setup", "puma:flush_sockets"
+  before "puma:runit:setup", "puma:setup"
   before "puma:runit:quit", "puma:runit:stop"
 
   namespace :puma do
+
+    desc "Setup Puma configuration"
+    task :setup, :roles => :app do
+      Capistrano::BaseHelper.prepare_path(File.join(fetch(:shared_path), "sockets"), fetch(:user), fetch(:group))
+
+      # Create puma configuration file
+      Capistrano::BaseHelper::generate_and_upload_config(fetch(:puma_local_config), fetch(:puma_remote_config))
+    end
+
+    desc "Flush Puma sockets, as they can end up 'hanging around'"
+    task :flush_sockets, :roles => :app do
+      run "rm -f #{fetch(:puma_socket_file)}; rm -f #{fetch(:puma_control_file)}"
+    end
+
     namespace :runit do
       desc "Setup Puma runit-service"
       task :setup, :roles => :app do
-        Capistrano::BaseHelper.prepare_path(File.join(fetch(:shared_path), "sockets"), fetch(:user), fetch(:group))
 
-        # Create puma configuration file
-        Capistrano::BaseHelper::generate_and_upload_config(fetch(:puma_local_config), fetch(:puma_remote_config))
 
         # Create runit config
         Capistrano::RunitBase.create_service_dir(puma_runit_service_name)
@@ -34,8 +46,8 @@ Capistrano::Configuration.instance(true).load do
         Capistrano::RunitBase.make_service_scripts_executeable(puma_runit_service_name)
         # Set correct permissions/owner on log path
         Capistrano::RunitBase.create_and_permissions_on_path(fetch(:puma_log_path))
-      end 
-      
+      end
+
       desc "Enable Puma runit-service"
       task :enable, :roles => :app do
         Capistrano::RunitBase.enable_service(puma_runit_service_name)
@@ -71,12 +83,15 @@ Capistrano::Configuration.instance(true).load do
       desc "Restart Puma runit-service"
       task :restart, :roles => :app do
         # Send USR2 to puma in order to restart it....
+        # check if puma is running, if not start instead
         Capistrano::RunitBase.control_service(puma_runit_service_name, "2")
       end
-      
-      desc "Flush Puma sockets, as they can end up 'hanging around'"
-      task :flush_sockets, :roles => :app do
-        run "rm -f #{fetch(:puma_socket_file)}; rm -f #{fetch(:puma_control_file)}"
+
+      desc "Phased Restart of Puma"
+      task :phase_restart, :roles => :app do
+        # check if puma is running, if not start instead
+        # Send USR1 to puma in order to restart it....
+        Capistrano::RunitBase.control_service(puma_runit_service_name, "1")
       end
 
       desc "Purge Puma runit configuration"
@@ -84,7 +99,7 @@ Capistrano::Configuration.instance(true).load do
         Capistrano::RunitBase.force_control_service(puma_runit_service_name, "force-stop", true)
         Capistrano::RunitBase.purge_service(puma_runit_service_name)
       end
-      
+
     end
   end
 end
