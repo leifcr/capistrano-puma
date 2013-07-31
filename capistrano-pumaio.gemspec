@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "capistrano-pumaio"
-  s.version = "0.0.7"
+  s.version = "0.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Leif Ringstad"]
-  s.date = "2013-07-29"
+  s.date = "2013-07-31"
   s.description = "Capistrano recipes for puma using runit and monit."
   s.email = "leifcr@gmail.com"
   s.extra_rdoc_files = [
@@ -27,8 +27,11 @@ Gem::Specification.new do |s|
     "lib/capistrano/puma.rb",
     "lib/capistrano/puma/config.rb",
     "lib/capistrano/puma/monit.rb",
+    "lib/capistrano/puma/nginx.rb",
     "lib/capistrano/puma/runit.rb",
     "templates/monit/puma.conf.erb",
+    "templates/nginx/application.conf.erb",
+    "templates/nginx/htpasswd.erb",
     "templates/runit/config.rb.erb",
     "templates/runit/control-q.erb",
     "templates/runit/finish.erb",
