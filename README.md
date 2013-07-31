@@ -1,6 +1,6 @@
 # Capistrano Recipes for Puma
 
-This gem provides recipes for [Puma](http://puma.io) to setup runit and monit
+This gem provides recipes for [Puma](http://puma.io) to setup [runit](smarden.org/runit/), [monit](http://mmonit.com/monit) and [nginx](http://nginx.org) for both running and monitoring puma and a nginx site connected to a puma socket
 
 ## Usage
 
@@ -60,7 +60,7 @@ cap puma:runit:stop             # Stop Puma runit-service
 To use runit to start/stop/restart services instead of monit, use the example below.
 
 ```ruby
-# stop before deployment 
+# stop before deployment
 # (must be done after monit has stopped monitoring the task. If not, the service will be restarted by monit)
 before "monit:unmonitor", "puma:runit:stop"
 # start before enabling monitor
@@ -69,7 +69,44 @@ before  "monit:monitor",   "puma:runit:start"
 before  "monit:monitor",   "puma:runit:restart"
 ```
 
-## Configuration
+### nginx
+
+#### Specific to puma and nginx for the application:
+
+```ruby
+cap puma:nginx:disable          # Disable nginx site for the application
+cap puma:nginx:enable           # Enable nginx site for the application
+cap puma:nginx:purge            # Purge nginx site config for the application
+cap puma:nginx:setup            # Parses and uploads nginx configuration for this app.
+```
+
+#### Global nginx commands
+
+```ruby
+cap nginx:restart               # Restart nginx
+cap nginx:start                 # Start nginx
+cap nginx:status                # Show nginx status
+cap nginx:stop                  # Stop nginx
+```
+
+#### Configuration for nginx
+
+See nginx.rb for configuration options.
+
+#### Notes when using nginx
+
+
+puma:nginx:setup is setup to run automatically after deploy:setup, and you will be asked if you want to enable the site.
+
+If you do not enable the site during setup, be sure to run the following two commands when you want to enable your site:
+
+```ruby
+cap puma:nginx:enable
+cap nginx:restart
+```
+
+
+## Configuration of Monit/Runit
 
 See puma/config.rb for default options, and ovveride any in your deploy.rb file.
 
