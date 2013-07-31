@@ -16,6 +16,8 @@ Capistrano::Configuration.instance(true).load do
   _cset :puma_control_file, "#{File.join(fetch(:sockets_path), "pumactl.sock")}"
   _cset :puma_control_url, "unix://#{fetch(:puma_control_file)}"
 
+  _cset :puma_use_preload_app, true # This must be set to false if phased restarts should be used
+
   _cset :puma_activate_control_app, true
 
   _cset :puma_on_restart_active, true

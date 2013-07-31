@@ -88,7 +88,7 @@ Capistrano::Configuration.instance(true).load do
       end
 
       desc "Phased Restart of Puma"
-      task :phase_restart, :roles => :app do
+      task :phased_restart, :roles => :app do
         # check if puma is running, if not start instead
         # Send USR1 to puma in order to restart it....
         Capistrano::RunitBase.control_service(puma_runit_service_name, "1")

@@ -25,10 +25,22 @@ cap puma:monit:disable          # Disable and stop monit services for puma
 cap puma:monit:enable           # Enable monit services for puma
 cap puma:monit:monitor          # Monitor puma
 cap puma:monit:restart          # Restart monit services for puma
+cap puma:monit:phased_restart   # Phased-Restart monit services for puma
 cap puma:monit:setup            # Setup Puma monit-service
 cap puma:monit:start            # Start monit services for puma (will also tr...
 cap puma:monit:stop             # Stop monit services for puma (will also sto...
 cap puma:monit:unmonitor        # Purge puma monit configuration
+```
+
+_Note about phased restarts:_
+
+_It is not possible to have the application preloaded by puma when using phased restarts._
+_You must therefore set the option :puma\_use\_preload\_app to to false in your deploy.rb_
+
+_Like this:_
+
+```ruby
+set :puma_use_preload_app, false # If you are going to use phased restarts
 ```
 
 #### Setup in your deploy file

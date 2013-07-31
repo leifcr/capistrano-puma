@@ -8,8 +8,9 @@ state_path '<%= c.fetch(:puma_state_file) %>'
 environment '<%= "#{Capistrano::BaseHelper.environment}" %>'
 <%= "activate_control_app '#{c.fetch(:puma_control_url)}'" if c.fetch(:puma_activate_control_app) %>
 
-# Must preload application in case there are errors, if not, infinite restarts will happen
-preload_app!
+# In some cases preloading the app is best to avoid some infinite restart loops, however, it cannot be used in
+# combination with phased restart.
+<%= "preload_app!" if c.fetch(:puma_use_preload_app) %>
 
 directory '<%= File.join(c.fetch(:deploy_to), "current") %>'
 
