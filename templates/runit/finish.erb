@@ -7,11 +7,11 @@
 # <% c = Capistrano::BaseHelper.get_capistrano_instance %>
 # Variable name setup
 <%
-exit_code   = "EXIT_CODE_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
-exit_status = "EXIT_STATUS_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
-min_auto_restart_interval         = "MIN_AUTO_RESTART_INTERVAL_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
-max_auto_restart_count            = "MAX_AUTO_RESTART_COUNT_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
-auto_restart_count_clear_interval = "AUTO_RESTART_COUNT_CLEAR_INTERVAL_#{Capistrano::BaseHelper.user_app_env_underscore_short}_#{c.fetch(:puma_runit_service_name)}".upcase
+exit_code   = "EXIT_CODE_#{Capistrano::BaseHelper.user_app_env_underscore_short_char_safe}_#{c.fetch(:puma_runit_service_name)}".upcase
+exit_status = "EXIT_STATUS_#{Capistrano::BaseHelper.user_app_env_underscore_short_char_safe}_#{c.fetch(:puma_runit_service_name)}".upcase
+min_auto_restart_interval         = "MIN_AUTO_RESTART_INTERVAL_#{Capistrano::BaseHelper.user_app_env_underscore_short_char_safe}_#{c.fetch(:puma_runit_service_name)}".upcase
+max_auto_restart_count            = "MAX_AUTO_RESTART_COUNT_#{Capistrano::BaseHelper.user_app_env_underscore_short_char_safe}_#{c.fetch(:puma_runit_service_name)}".upcase
+auto_restart_count_clear_interval = "AUTO_RESTART_COUNT_CLEAR_INTERVAL_#{Capistrano::BaseHelper.user_app_env_underscore_short_char_safe}_#{c.fetch(:puma_runit_service_name)}".upcase
 %>
 #
 # The following variables are set by Runit:
@@ -45,18 +45,18 @@ auto_restart_count_clear_interval = "AUTO_RESTART_COUNT_CLEAR_INTERVAL_#{Capistr
 
 # ./run's exit code
 <%= "#{exit_code}" %>=$1
- 
+
 # The least significant byte of the exit status as determined by waitpid(2);
 # for instance it is 0 if ./run exited normally, and the signal number if
 # ./run was terminated by a signal.
 <%= "#{exit_status}" %>=$2
- 
+
 # The minimum delay (in seconds) between automatic restarts
 <%= "#{min_auto_restart_interval}" %>=<%= c.fetch(:puma_restart_interval) %>
- 
+
 # The maximum number of automatic restarts allowed
 <%= "#{max_auto_restart_count}" %>=<%= c.fetch(:puma_restart_count) %>
- 
+
 # Reset the restart count if <%= "#{auto_restart_count_clear_interval}" %> seconds
 # have elapsed since the last automatic restart.
 <%= "#{auto_restart_count_clear_interval}" %>=<%= c.fetch(:puma_autorestart_clear_interval) %>
@@ -68,7 +68,7 @@ export <%= "#{max_auto_restart_count}" %>
 export <%= "#{auto_restart_count_clear_interval }" %>
 
 ### Normally no changes should be made after this point
- 
+
 echo "<%= "User: #{c.fetch(:user)} Application: #{c.fetch(:application)} Service: #{c.fetch(:puma_runit_service_name)}" %> finish; exit code: $<%= "#{exit_code}" %>; exit status: $<%= "#{exit_status}" %>"
 
 if test $<%= "#{exit_code}" %> -eq 0 -a $<%= "#{exit_status}" %> -eq 0
