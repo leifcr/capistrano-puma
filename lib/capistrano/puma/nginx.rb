@@ -17,7 +17,7 @@ Capistrano::Configuration.instance.load do
   _cset :nginx_simple_auth_salt, (0...8).map{ ('a'..'z').to_a[rand(26)] }.join
 
   # Server names. Defaults to application name.
-  _cset :server_names, defer {"#{application}_#{Capistrano::BaseHelper.environment}"}
+  _cset :server_names, defer {"#{fetch(:application)}_#{Capistrano::BaseHelper.environment}"}
 
   # Path to the nginx erb template to be parsed before uploading to remote
   _cset :nginx_local_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "nginx", )), "application.conf.erb")

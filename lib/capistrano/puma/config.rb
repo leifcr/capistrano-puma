@@ -9,12 +9,12 @@ Capistrano::Configuration.instance(true).load do
   _cset :puma_control, 'bundle exec pumactl'
 
   # Control files
-  _cset :puma_socket_file, "#{File.join(fetch(:sockets_path), "puma.sock")}"
-  _cset :puma_socket_url,  "unix://#{fetch(:puma_socket_file)}"
-  _cset :puma_pid_file,    File.join(fetch(:pids_path), "puma.pid")
-  _cset :puma_state_file,  File.join(fetch(:sockets_path), "puma.state")
-  _cset :puma_control_file, "#{File.join(fetch(:sockets_path), "pumactl.sock")}"
-  _cset :puma_control_url, "unix://#{fetch(:puma_control_file)}"
+  _cset :puma_socket_file,  defer { "#{File.join(fetch(:sockets_path), "puma.sock")}" }
+  _cset :puma_socket_url,   defer { "unix://#{fetch(:puma_socket_file)}" }
+  _cset :puma_pid_file,     defer { File.join(fetch(:pids_path), "puma.pid") }
+  _cset :puma_state_file,   defer { File.join(fetch(:sockets_path), "puma.state") }
+  _cset :puma_control_file, defer { "#{File.join(fetch(:sockets_path), "pumactl.sock")}" }
+  _cset :puma_control_url,  defer { "unix://#{fetch(:puma_control_file)}" }
 
   _cset :puma_use_preload_app, true # This must be set to false if phased restarts should be used
 
