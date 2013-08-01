@@ -82,16 +82,56 @@ Capistrano::Configuration.instance(true).load do
 
       desc "Restart Puma runit-service"
       task :restart, :roles => :app do
-        # Send USR2 to puma in order to restart it....
-        # check if puma is running, if not start instead
-        Capistrano::RunitBase.control_service(puma_runit_service_name, "2")
+        result     = nil
+        started    = false
+
+        # It is not possible to see if a restart is in progress using the pumactl tool as of now.
+
+        # restarting = false
+        # # check if puma is already performing a restart
+        # invoke_command("cd #{fetch(:current_path)}; [[ $(#{fetch(:puma_control)} -S #{fetch(:puma_state_file)} status) == *restart* ]] && echo 'restarting';true") do |ch, stream, out|
+        #   result = (/restart/ =~ out)
+        # end
+        # restarting = true unless result.nil?
+        # result     = nil
+
+        # if restarting == false
+          # check if it is running
+          invoke_command("cd #{fetch(:current_path)}; [[ $(#{fetch(:puma_control)} -S #{fetch(:puma_state_file)} status) == *started* ]] && echo 'started';true") do |ch, stream, out|
+            result = (/started/ =~ out)
+          end
+          started = true unless result.nil?
+
+          if started == true
+            logger.info("\nRestarting puma")
+            # Send USR2 to puma in order to restart it....
+            Capistrano::RunitBase.control_service(puma_runit_service_name, "2")
+          else
+            logger.important("\nStarting puma, (wasn't running before)")
+            Capistrano::RunitBase.start_service(puma_runit_service_name)
+          end
+        # end
       end
 
       desc "Phased Restart of Puma"
       task :phased_restart, :roles => :app do
-        # check if puma is running, if not start instead
-        # Send USR1 to puma in order to restart it....
-        Capistrano::RunitBase.control_service(puma_runit_service_name, "1")
+        result     = nil
+        started    = false
+
+        # check if it is running
+        invoke_command("cd #{fetch(:current_path)}; [[ $(#{fetch(:puma_control)} -S #{fetch(:puma_state_file)} status) == *started* ]] && echo 'started';true") do |ch, stream, out|
+          result = (/started/ =~ out)
+        end
+        started = true unless result.nil?
+
+        if started == true
+          # Send USR1 to puma in order to restart it....
+          logger.info("\nPhased restart of puma")
+          Capistrano::RunitBase.control_service(puma_runit_service_name, "1")
+        else
+          logger.important("\nStarting puma, (wasn't running before)")
+          Capistrano::RunitBase.start_service(puma_runit_service_name)
+        end
       end
 
       desc "Purge Puma runit configuration"
