@@ -29,7 +29,7 @@ Capistrano::Configuration.instance(true).load do
   _cset :puma_local_config, File.join(File.expand_path(File.join(File.dirname(__FILE__),"../../../templates", "runit")), "config.rb.erb")
 
   # The remote location of puma's config file. Used by runit when starting puma
-  _cset :puma_remote_config, File.join(shared_path, "config", "puma.rb")
+  _cset :puma_remote_config, defer {File.join(shared_path, "config", "puma.rb")}
 
   # runit defaults
   _cset :puma_restart_interval, defer {fetch(:runit_restart_interval)}
