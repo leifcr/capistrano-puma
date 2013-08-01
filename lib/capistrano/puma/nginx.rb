@@ -1,3 +1,6 @@
+require 'capistrano/puma/config'
+require 'capistrano/base_helper/monit_base'
+
 Capistrano::Configuration.instance.load do
 
   # Where your nginx lives. Usually /opt/nginx or /usr/local/nginx for source compiled.
