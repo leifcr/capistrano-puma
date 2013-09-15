@@ -1,6 +1,6 @@
 # Capistrano Recipes for Puma
 
-This gem provides recipes for [Puma](http://puma.io) to setup [runit](smarden.org/runit/), [monit](http://mmonit.com/monit) and [nginx](http://nginx.org) for both running and monitoring puma and a nginx site connected to a puma socket
+This gem provides recipes for [Puma](http://puma.io) to setup [runit](http://smarden.org/runit/), [monit](http://mmonit.com/monit) and [nginx](http://nginx.org) for both running and monitoring puma and a nginx site connected to a puma socket
 
 ## Usage
 
