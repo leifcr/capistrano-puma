@@ -1,15 +1,9 @@
-require 'securerandom'
-
-require 'capistrano/helpers/template_paths'
+require 'active_support'
+require 'active_support/core_ext/string/filters'
+require 'capistrano/helpers/puma/template_paths'
 require 'capistrano/helpers/base'
-require 'capistrano/helpers/nginx'
-require 'capistrano/dsl/base_paths'
-
-include Capistrano::DSL::BasePaths
-include Capistrano::DSL::MonitPaths
 include Capistrano::Helpers::Base
-include Capistrano::Helpers::Monit
-include Capistrano::Helpers::Puma::Nginx
+include Capistrano::Helpers::Puma
 
 namespace :load do
   task :defaults do
@@ -30,24 +24,24 @@ namespace :load do
     set :server_names, proc { app_env_underscore }
 
     # Path to the nginx erb template to be parsed before uploading to remote
-    set :nginx_config_template, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'nginx', 'application.conf.erb') # rubocop:disable Metrics/LineLength
+    set :nginx_config_template, File.join(TemplatePaths.template_base_path, 'nginx', 'application.conf.erb') # rubocop:disable Metrics/LineLength
 
     # Path to where your remote config will reside (I use a directory sites inside conf)
     set :nginx_remote_config, proc { shared_path.join('config', "nginx_#{app_env_underscore}.conf") }
 
     # Path to local htpasswd template file
-    set :nginx_htpasswd_template, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'nginx', 'htpasswd.erb')
+    set :nginx_htpasswd_template, File.join(TemplatePaths.template_base_path, 'nginx', 'htpasswd.erb')
 
     # Path to remote htpasswd file
     set :nginx_remote_htpasswd, proc { shared_path.join('config', '.htpasswd') }
 
-    set :nginx_sites_enabled_symlink, proc { File.join(nginx_sites_enabled_path, app_env_underscore) }
+    set :nginx_sites_enabled_symlink, proc { File.join(fetch(:nginx_sites_enabled_path), app_env_underscore) }
 
     set :nginx_uses_http, true
     set :nginx_uses_ssl, false
     set :nginx_port, 80
 
-    set :nginx_log_path, File.join('/var', 'log', 'nginx', fetch(:application).squish.downcase.gsub(/[\s|-]/, '_'))
+    set :nginx_log_path, proc { File.join('/var', 'log', 'nginx', fetch(:application).squish.downcase.gsub(/[\s|-]/, '_')) }
 
     set :nginx_client_max_body_size, '10M'
 

@@ -8,7 +8,7 @@ module Capistrano
         module_function
 
         def template_base_path
-          File.expand_path(File.join(File.dirname(__FILE__), '../../../templates'))
+          File.expand_path(File.join(File.dirname(__FILE__), '../../../../templates'))
         end
       end
     end

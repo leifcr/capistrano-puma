@@ -36,10 +36,11 @@ namespace :load do
     set :puma_log_path, proc { "/var/log/service/#{fetch(:user)}/#{app_env_folder}/puma" }
 
     # Configuration files
-    set :puma_config_template, File.join(TemplatePaths.template_base_path, 'config.rb.erb')
+    set :puma_config_template, File.join(TemplatePaths.template_base_path, 'puma-config.rb.erb')
 
     # The remote location of puma's config file. Used by runit when starting puma
-    set :puma_config_file, proc { File.join(shared_path, 'config', 'puma.rb') }
+    set :puma_remote_config_folder, proc { shared_path.join('config') }
+    set :puma_config_file, proc { File.join(fetch(:puma_remote_config_folder), 'puma.rb') }
 
     # runit defaults
     set :puma_restart_interval, proc { fetch(:runit_restart_interval) }

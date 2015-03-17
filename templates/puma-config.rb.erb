@@ -1,0 +1,20 @@
+# Puma configuration for:
+# <%= "#{fetch(:application)} running as #{fetch(:user)} in environment #{environment}" %>
+workers <%= fetch(:puma_workers) %>
+threads <%= fetch(:puma_min_threads) %>, <%= fetch(:puma_max_threads) %>
+bind '<%= fetch(:puma_socket_url) %>'
+pidfile '<%= fetch(:puma_pid_file) %>'
+state_path '<%= fetch(:puma_state_file) %>'
+environment '<%= "#{environment}" %>'
+<%= "activate_control_app '#{fetch(:puma_control_url)}'" if fetch(:puma_activate_control_app) %>
+
+# In some cases preloading the app is best to avoid some infinite restart loops, however, it cannot be used in
+# combination with phased restart.
+<%= "preload_app!" if fetch(:puma_use_preload_app) %>
+
+directory '<%= current_path %>'
+
+# TODO - fix restart block!
+# <%= "on_restart do"              if fetch(:puma_on_restart_active) %>
+# <%= "  puts \"Restarting puma\"" if fetch(:puma_on_restart_active) %>
+# <%= "end"                        if fetch(:puma_on_restart_active) %>
