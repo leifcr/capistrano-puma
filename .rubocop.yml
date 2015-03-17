@@ -1,0 +1,14 @@
+AllCops:
+  # Include:
+  Exclude:
+    - 'Gemfile.lock'
+
+Documentation:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  Max: 12 # 10 is just to strict...
+  Exclude:
