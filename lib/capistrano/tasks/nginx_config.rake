@@ -23,14 +23,14 @@ namespace :load do
     set :nginx_use_simple_auth, false
     set :nginx_simple_auth_message, 'Restricted site'
     set :nginx_simple_auth_user, 'user'
-    set :nginx_simple_auth_password, proc { default_pw_generator }
+    set :nginx_simple_auth_password, nil # if set to nil, it will automatically be generated
     set :nginx_simple_auth_salt, (0...8).map { ('a'..'z').to_a[rand(26)] }.join
 
     # Server names. Defaults to application name.
     set :server_names, proc { app_env_underscore }
 
     # Path to the nginx erb template to be parsed before uploading to remote
-    set :nginx_local_config, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'nginx', 'application.conf.erb') # rubocop:disable Metrics/LineLength
+    set :nginx_config_template, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'nginx', 'application.conf.erb') # rubocop:disable Metrics/LineLength
 
     # Path to where your remote config will reside (I use a directory sites inside conf)
     set :nginx_remote_config, proc { shared_path.join('config', "nginx_#{app_env_underscore}.conf") }

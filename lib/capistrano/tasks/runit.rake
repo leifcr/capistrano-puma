@@ -93,27 +93,19 @@ namespace :puma do
     task :restart do
       # It is not possible to see if a restart is in progress using the pumactl tool as of now.
 
-      # restarting = false
-      # # check if puma is already performing a restart
-      # invoke_command("cd #{fetch(:current_path)}; [[ $(#{fetch(:puma_control)} -S #{fetch(:puma_state_file)} status) == *restart* ]] && echo 'restarting';true") do |ch, stream, out| # rubocop:disable Metrics/LineLength
-      #   result = (/restart/ =~ out)
-      # end
-      # restarting = true unless result.nil?
-      # result     = nil
-
-      # if restarting == false
-      # check if it is running
-      started = false
+      started    = false
+      restarting = false
       within(current_path) do
         a = capture(fetch(:puma_control), "-S #{fetch(:puma_state_file)} status)")
         started = a.includes?('started')
+        restarting = a.includes?('restarting')
       end
 
-      if started == true
+      if (started == true) && (restarting == false)
         info("\nRestarting puma")
         # Send USR2 to puma in order to restart it....
         control_service(fetch(:puma_runit_service_name), '2')
-      else
+      elsif restarting == false
         info("\nStarting puma, (wasn't running before)")
         control_service(fetch(:puma_runit_service_name), 'start')
       end

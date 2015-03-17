@@ -1,9 +1,15 @@
-after "monit:setup", "puma:monit:setup"
-after "puma:monit:setup", "puma:monit:enable"
-after "puma:monit:enable", "monit:reload"
+require 'capistrano/helpers/puma/monit'
+include Capistrano::DSL::BasePaths
+include Capistrano::Helpers::Base
+include Capistrano::Helpers::Monit
+include Capistrano::Helpers::Puma
 
-before "puma:monit.disable", "puma:monit:unmonitor"
-after  "puma:monit:disable", "monit:reload"
+after 'monit:setup', 'puma:monit:setup'
+# after 'puma:monit:setup', 'puma:monit:enable'
+after 'puma:monit:enable', 'monit:reload'
+
+before 'puma:monit.disable', 'puma:monit:unmonitor'
+after 'puma:monit:disable', 'monit:reload'
 
 # start service after update in case it has not been stopped
 # after "deploy:update", "puma:monit:start"
@@ -12,20 +18,28 @@ after  "puma:monit:disable", "monit:reload"
 namespace :puma do
   namespace :monit do
     desc 'MONIT: Setup Puma service'
-    task :setup, :roles => [:app, :web, :db] do
-      # Upload configuration
-      Capistrano::BaseHelper::generate_and_upload_config(puma_local_monit_config, File.join(fetch(:monit_available_path), "#{fetch(:puma_runit_service_name)}.conf"))
-      # Enable monitor
+    task :setup do
+      on roles(:app) do |host|
+        info "MONIT: Uploading configuration for puma for #{fetch(:application)} on #{host}"
+        # Upload configuration
+        upload! template_to_s_io(fetch(:puma_monit_config_template)), Monit.available_configuration_with_path
+      end
     end
 
     desc 'MONIT: Enable services for Puma'
-    task :enable, :roles => [:app, :web, :db] do
-      enable_service("#{fetch(:puma_runit_service_name)}.conf")
+    task :enable do
+      on roles(:app) do |host|
+        info "MONIT: Enabling service for puma for application #{fetch(:application)} on #{host}"
+        enable_service(Monit.available_configuration_file)
+      end
     end
 
     desc 'MONIT: Disable and Stop services for Puma'
-    task :disable, :roles => [:app, :web, :db] do
-      disable_service("#{fetch(:puma_runit_service_name)}.conf")
+    task :disable do
+      on roles(:app) do |host|
+        info "MONIT: Disabling service for puma for application #{fetch(:application)} on #{host}"
+        disable_service(Monit.available_configuration_file)
+      end
     end
 
     %w(start stop restart monitor unmonitor).each do |cmd|

@@ -1,75 +1,89 @@
 namespace :puma do
   namespace :nginx do
-    desc "Parses and uploads nginx configuration for this app."
-    task :setup, :roles => :app , :except => { :no_release => true } do
+    desc 'Generates and uploads nginx configuration for this app to the App server(s)'
+    # task :setup, :roles => :app , :except => { :no_release => true } do
+    task :setup do
+      # Will setup nginx on the application server, as single-host app/web server is used behind load balancer
+      # Nginx is used for talking over socket to puma instead of opening puma to the 'world'
+      on roles(:app) do |host|
+        info "NGINX: Setting up for puma for #{fetch(:application)} on #{host}"
+        upload! template_to_s_io(fetch(:nginx_config_template)), fetch(:nginx_remote_config)
+        if (fetch(:nginx_use_simple_auth)) || fetch(:nginx_ssl_use_simple_auth)
+          set :pw, ask('', '')
+          set :create_httpwd, ask('Create .httpasswd configuration file [Yn]', 'Y')
+          # if auth is enabled, upload htpasswd file
+          # Since passwords are stored in plaintext in the deployment file, you should use simple auth with care.
+          # It is generally better to implement a full authorization stack like oauth, use devise on rails,
+          # or other login/auth system
+          if fetch(:create_httpwd)
+            set :nginx_simple_auth_password, default_pw_generator if fetch(:nginx_simple_auth_password).nil?
+            upload! template_to_s_io(fetch(:nginx_htpasswd_template)), fetch(:nginx_remote_htpasswd)
+          else
+            set :nginx_use_simple_auth, false
+            set :nginx_ssl_use_simple_auth, false
+          end
+        end
+        # create log path
+        # /var/log/nginx must be writable by 'deploy' user, usually this can be acomplished by adding the deploy user to
+        # the www-data group
+        execute :mkdir, "-p /var/log/nginx/#{fetch(:application)}"
+      end
+    end
 
-      Capistrano::BaseHelper.generate_and_upload_config(fetch(:nginx_local_config), fetch(:nginx_remote_config))
-
-      # if auth is enabled, upload htpasswd file
-      # Since passwords are stored in plaintext in the deployment file, you should use simple auth with care.
-      # It is generally better to implement a full authorization stack like oauth, use devise on rails, or other login/auth system
-      if fetch(:nginx_use_simple_auth) or fetch(:nginx_ssl_use_simple_auth)
-        if Capistrano::CLI.ui.agree("Create .htpasswd configuration file? [Yn]")
-          Capistrano::BaseHelper.generate_and_upload_config(fetch(:nginx_local_htpasswd), fetch(:nginx_remote_htpasswd))
+    desc 'Enable nginx site for the application'
+    task :enable do
+      on roles(:app) do |host|
+        if test("[ ! -h #{fetch(:nginx_sites_enabled_symlink)} ]")
+          info "NGINX: Enabling application #{fetch(:application)} on #{host}"
+          execute :ln, "-sf #{fetch(:nginx_remote_config)} #{fetch(:nginx_sites_enabled_symlink)}"
         else
-          set :nginx_use_simple_auth, false
-          set :nginx_ssl_use_simple_auth, false
+          info "NGINX: Already enabled application #{fetch(:application)} on #{host}"
         end
       end
-
-      # create log path, must sudo since path can have root-only permissions
-      run "#{sudo} mkdir -p /var/log/nginx/#{fetch(:application)} && #{sudo} chown root:www-data /var/log/nginx/#{fetch(:application)}"
     end
 
-    desc "Enable nginx site for the application"
-    task :enable, :roles => :app , :except => { :no_release => true } do
-      # symlink to nginx site configuration file
-      run("[ -h #{fetch(:nginx_sites_enabled_symlink)} ] || #{sudo} ln -sf #{fetch(:nginx_remote_config)} #{fetch(:nginx_sites_enabled_symlink)}")
+    desc 'Disable nginx site for the application'
+    task :disable do
+      on roles(:app) do |host|
+        if test("[ -h #{fetch(:nginx_sites_enabled_symlink)} ]")
+          info "NGINX: Disabling application #{fetch(:application)} on #{host}"
+          execute :rm, "-f #{fetch(:nginx_sites_enabled_symlink)}"
+        else
+          info "NGINX: Already disabled application #{fetch(:application)} on #{host}"
+        end
+      end
     end
 
-    desc "Disable nginx site for the application"
-    task :disable, :roles => :app , :except => { :no_release => true } do
-      run("[ ! -h #{fetch(:nginx_sites_enabled_symlink)} ] || #{sudo} rm -f #{fetch(:nginx_sites_enabled_symlink)}")
+    desc 'Purge nginx site config for the application'
+    task :purge do
+      on roles(:app) do |host|
+        info "NGINX: Purging configuration for #{fetch(:application)} on #{host}"
+        execute :rm, "-f #{fetch(:nginx_sites_enabled_symlink)}" if test("[ -h #{fetch(:nginx_sites_enabled_symlink)} ]")
+        execute :rm, "-f #{fetch(:nginx_remote_htpasswd)}"
+        execute :rm, "-f #{fetch(:nginx_remote_config)}"
+        # must restart nginx to make sure site is disabled when config is purge
+        execute :sudo, :service, 'nginx restart'
+      end
     end
-
-    desc "Purge nginx site config for the application"
-    task :purge, :roles => :app , :except => { :no_release => true } do
-      run("[ ! -h #{fetch(:nginx_sites_enabled_symlink)} ] || #{sudo} rm -f #{fetch(:nginx_sites_enabled_symlink)}")
-      # must restart nginx to make sure site is disabled when config is purge
-      run "#{sudo} service nginx restart"
-      run "rm -f #{fetch(:nginx_remote_htpasswd)} && rm -f #{fetch(:nginx_remote_config)}"
-    end
-
   end
 end
 
 namespace :nginx do
-  desc "Restart nginx"
-  task :restart, :roles => :app , :except => { :no_release => true } do
-    run "#{sudo} service nginx restart"
-  end
-
-  desc "Stop nginx"
-  task :stop, :roles => :app , :except => { :no_release => true } do
-    run "#{sudo} service nginx stop"
-  end
-
-  desc "Start nginx"
-  task :start, :roles => :app , :except => { :no_release => true } do
-    run "#{sudo} service nginx start"
-  end
-
-  desc "Show nginx status"
-  task :status, :roles => :app , :except => { :no_release => true } do
-    run "#{sudo} service nginx status"
-  end
-
-end
-
-after 'deploy:setup' do
-  puma.nginx.setup if Capistrano::CLI.ui.agree("Create nginx configuration file? [Yn]")
-  if Capistrano::CLI.ui.agree("Enable site in nginx? [Yn]")
-    puma.nginx.enable
-    nginx.restart # must restart after enable for nginx to pickup new site
+  %w(start stop restart status).each do |nginx_cmd|
+    desc "Nginx/Puma: #{nginx_cmd.capitalize}"
+    task nginx_cmd.to_sym do
+      on roles(:app) do |host|
+        info "NGINX: Performing #{nginx_cmd} for #{fetch(:application)} on #{host}"
+        execute :sudo, :service, "nginx #{nginx_cmd}"
+      end
+    end
   end
 end
+
+# after 'deploy:setup' do
+#   puma.nginx.setup if Capistrano::CLI.ui.agree("Create nginx configuration file? [Yn]")
+#   if Capistrano::CLI.ui.agree("Enable site in nginx? [Yn]")
+#     puma.nginx.enable
+#     nginx.restart # must restart after enable for nginx to pickup new site
+#   end
+# end

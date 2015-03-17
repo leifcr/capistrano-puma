@@ -1,9 +1,10 @@
 require 'capistrano/runit'
-require 'capistrano/helpers/template_paths'
+require 'capistrano/helpers/puma/template_paths'
 include Capistrano::DSL::BasePaths
 include Capistrano::DSL::RunitPaths
 include Capistrano::Helpers::Base
 include Capistrano::Helpers::Runit
+include Capistrano::Helpers::Puma
 
 namespace :load do
   task :defaults do
@@ -35,7 +36,7 @@ namespace :load do
     set :puma_log_path, proc { "/var/log/service/#{fetch(:user)}/#{app_env_folder}/puma" }
 
     # Configuration files
-    set :puma_config_template, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'config.rb.erb')
+    set :puma_config_template, File.join(TemplatePaths.template_base_path, 'config.rb.erb')
 
     # The remote location of puma's config file. Used by runit when starting puma
     set :puma_config_file, proc { File.join(shared_path, 'config', 'puma.rb') }
@@ -46,10 +47,10 @@ namespace :load do
     set :puma_autorestart_clear_interval, proc { fetch(:runit_autorestart_clear_interval) }
 
     # runit paths
-    set :puma_runit_run_template, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'runit', 'run.erb')
-    set :puma_runit_finish_template, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'runit', 'finish.erb') # rubocop:disable Metrics/LineLength
-    set :puma_runit_control_q_template, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'runit', 'control-q.erb') # rubocop:disable Metrics/LineLength
-    set :puma_runit_log_run_template, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'runit', 'log-run.erb') # rubocop:disable Metrics/LineLength
+    set :puma_runit_run_template, File.join(TemplatePaths.template_base_path, 'runit', 'run.erb')
+    set :puma_runit_finish_template, File.join(TemplatePaths.template_base_path, 'runit', 'finish.erb') # rubocop:disable Metrics/LineLength
+    set :puma_runit_control_q_template, File.join(TemplatePaths.template_base_path, 'runit', 'control-q.erb') # rubocop:disable Metrics/LineLength
+    set :puma_runit_log_run_template, File.join(TemplatePaths.template_base_path, 'runit', 'log-run.erb') # rubocop:disable Metrics/LineLength
 
     # monit configuration
     set :puma_monit_service_name,  proc { "#{user_app_env_underscore}_puma" }
@@ -60,6 +61,6 @@ namespace :load do
     set :puma_monit_cpu_alert_threshold,   '90% for 2 cycles'
     set :puma_monit_cpu_restart_threshold, '95% for 5 cycles'
 
-    set :puma_local_monit_config, File.join(Capistrano::Puma::TemplatePaths.template_base_path, 'monit', 'puma.conf.erb') # rubocop:disable Metrics/LineLength
+    set :puma_monit_config_template, File.join(TemplatePaths.template_base_path, 'monit', 'puma.conf.erb') # rubocop:disable Metrics/LineLength
   end
 end
