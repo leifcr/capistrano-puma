@@ -1,0 +1,9 @@
+#!/bin/sh -e
+# Log output for puma running on <%= fetch(:application) %> running as <%= fetch(:user) %>
+# make sure the log directory exists
+mkdir -p "<%= fetch(:puma_log_path) %>"
+# change path to the log directory
+cd "<%= fetch(:puma_log_path) %>"
+# start logging
+# exec chpst -u syslog svlogd -tt "<%= fetch(:puma_log_path) %>"
+exec svlogd -tt "<%= fetch(:puma_log_path) %>"

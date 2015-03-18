@@ -28,6 +28,8 @@ namespace :load do
     # This must be set to false if phased restarts should be used
     set :puma_use_preload_app, false
 
+    set :pruma_prune_bundler, true
+
     set :puma_activate_control_app, true
 
     set :puma_on_restart_active, true
@@ -50,8 +52,8 @@ namespace :load do
     # runit paths
     set :puma_runit_run_template, File.join(TemplatePaths.template_base_path, 'runit', 'run.erb')
     set :puma_runit_finish_template, File.join(TemplatePaths.template_base_path, 'runit', 'finish.erb') # rubocop:disable Metrics/LineLength
-    set :puma_runit_control_q_template, File.join(TemplatePaths.template_base_path, 'runit', 'control-q.erb') # rubocop:disable Metrics/LineLength
-    set :puma_runit_log_run_template, File.join(TemplatePaths.template_base_path, 'runit', 'log-run.erb') # rubocop:disable Metrics/LineLength
+    set :puma_runit_control_q_template, File.join(TemplatePaths.template_base_path, 'runit', 'control', 'q.erb') # rubocop:disable Metrics/LineLength
+    set :puma_runit_log_run_template, File.join(TemplatePaths.template_base_path, 'runit', 'log', 'run.erb') # rubocop:disable Metrics/LineLength
 
     # monit configuration
     set :puma_monit_service_name,  proc { "#{user_app_env_underscore}_puma" }

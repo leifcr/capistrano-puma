@@ -8,9 +8,15 @@ state_path '<%= fetch(:puma_state_file) %>'
 environment '<%= "#{environment}" %>'
 <%= "activate_control_app '#{fetch(:puma_control_url)}'" if fetch(:puma_activate_control_app) %>
 
-# In some cases preloading the app is best to avoid some infinite restart loops, however, it cannot be used in
-# combination with phased restart.
-<%= "preload_app!" if fetch(:puma_use_preload_app) %>
+<% if fetch(:puma_use_preload_app) %>
+# In some cases preloading the app is best to avoid some infinite restart loops, however,
+# it cannot be used it combination with phased restart.
+<%= "preload_app!" %>
+<% end %>
+
+<% if fetch(:pruma_prune_bundler) %>
+# TODO: prune_bundler
+<% end %>
 
 directory '<%= current_path %>'
 

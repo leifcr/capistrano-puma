@@ -3,12 +3,12 @@ namespace :puma do
   desc 'Setup Puma configuration'
   task :setup do
     on roles(:app) do
-      if test("[ ! -d #{fetch(:sockets_path)} ]")
+      if test("[ ! -d '#{fetch(:sockets_path)}' ]")
         execute :mkdir, "-p #{fetch(:sockets_path)}"
       end
 
-      if test("[ ! -d #{fetch(:puma_remote_config_folder)} ]")
-        execute :mkdir, "-p #{fetch(:puma_remote_config_folder)}"
+      if test("[ ! -d '#{fetch(:puma_remote_config_folder)}' ]")
+        execute :mkdir, "-p '#{fetch(:puma_remote_config_folder)}'"
       end
       upload! template_to_s_io(fetch(:puma_config_template)), fetch(:puma_config_file)
     end
@@ -17,8 +17,8 @@ namespace :puma do
   desc 'Flush Puma sockets, as they can end up \'hanging around\''
   task :flush_sockets do
     on roles(:app) do
-      execute :rm, "-f #{fetch(:puma_socket_file)}"
-      execute :rm, "-f #{fetch(:puma_control_file)}"
+      execute :rm, "-f '#{fetch(:puma_socket_file)}'"
+      execute :rm, "-f '#{fetch(:puma_control_file)}'"
     end
   end
 
@@ -27,20 +27,23 @@ namespace :puma do
     task :setup do
       on roles(:app) do
         # Create runit config
-        if test("[ ! -d #{runit_service_path(fetch(:puma_runit_service_name))} ]")
-          execute :mkdir, "-p #{runit_service_path(fetch(:puma_runit_service_name))}"
+        if test("[ ! -d '#{runit_service_path(fetch(:puma_runit_service_name))}' ]")
+          execute :mkdir, "-p '#{runit_service_path(fetch(:puma_runit_service_name))}'"
         end
 
         upload! template_to_s_io(fetch(:puma_runit_run_template)), runit_service_run_file(fetch(:puma_runit_service_name)) # rubocop:disable Metrics/LineLength
         upload! template_to_s_io(fetch(:puma_runit_finish_template)), runit_service_finish_file(fetch(:puma_runit_service_name)) # rubocop:disable Metrics/LineLength
 
         # must use quit script for stop as well, to ensure quit and stop performs equally
-        upload! template_to_s_io(fetch(:puma_runit_control_q_template)), runit_service_control_file(fetch(:puma_runit_service_name, 'q')) # rubocop:disable Metrics/LineLength
-        upload! template_to_s_io(fetch(:puma_runit_control_q_template)), runit_service_control_file(fetch(:puma_runit_service_name, 's')) # rubocop:disable Metrics/LineLength
+        if test("[ ! -d '#{runit_service_control_path(fetch(:puma_runit_service_name))}' ]")
+          execute :mkdir, "-p '#{runit_service_control_path(fetch(:puma_runit_service_name))}'"
+        end
+        upload! template_to_s_io(fetch(:puma_runit_control_q_template)), runit_service_control_file(fetch(:puma_runit_service_name), 'q') # rubocop:disable Metrics/LineLength
+        upload! template_to_s_io(fetch(:puma_runit_control_q_template)), runit_service_control_file(fetch(:puma_runit_service_name), 's') # rubocop:disable Metrics/LineLength
 
         # Log scripts for runit service
-        if test("[ ! -d #{runit_service_log_path(fetch(:puma_runit_service_name))} ]")
-          execute :mkdir, "-p #{runit_service_log_path(fetch(:puma_runit_service_name))}"
+        if test("[ ! -d '#{runit_service_log_path(fetch(:puma_runit_service_name))}' ]")
+          execute :mkdir, "-p '#{runit_service_log_path(fetch(:puma_runit_service_name))}'"
         end
 
         upload! template_to_s_io(fetch(:puma_runit_log_run_template)), runit_service_log_run_file(fetch(:puma_runit_service_name)) # rubocop:disable Metrics/LineLength
@@ -49,8 +52,8 @@ namespace :puma do
         runit_set_executable_files(fetch(:puma_runit_service_name))
 
         # Create log paths for the service
-        if test("[ ! -d #{runit_var_log_service_single_service_path(fetch(:puma_runit_service_name))} ]")
-          execute :mkdir, "-p #{runit_var_log_service_single_service_path(fetch(:puma_runit_service_name))}"
+        if test("[ ! -d '#{runit_var_log_service_single_service_path(fetch(:puma_runit_service_name))}' ]")
+          execute :mkdir, "-p '#{runit_var_log_service_single_service_path(fetch(:puma_runit_service_name))}'"
         end
       end
     end
