@@ -5,7 +5,7 @@
 exec 2>&1
 
 # Announce start
-echo "<%= "User: #{fetch(:user)} Application: #{fetch(:application)} Service: #{fetch(:puma_runit_service_name)}" %> starting..."
+echo "<%= "User: #{fetch(:user)} Application: #{fetch(:application)}, Environment: #{environment} Service: #{fetch(:puma_runit_service_name)}" %> starting..."
 
 # remove pumactl.sock and puma.sock if existing, as puma doesn't overwrite and files may be
 # existing after server crash or if puma was not properly shut down.
@@ -14,4 +14,4 @@ rm -f "<%= fetch(:puma_control_file) %>"
 cd '<%= current_path %>'
 
 # Start puma
-RAILS_ENV=<%= environment %> exec <%= fetch(:puma_bin) %> -C <%= fetch(:puma_remote_config) %>
+RAILS_ENV=<%= environment %> exec <%= fetch(:puma_bin) %> -C <%= fetch(:puma_config_file) %>

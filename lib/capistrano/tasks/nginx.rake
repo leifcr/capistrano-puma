@@ -1,5 +1,27 @@
+require 'capistrano/dsl/base_paths'
+require 'capistrano/helpers/base'
+require 'capistrano/helpers/puma/nginx'
+include Capistrano::DSL::BasePaths
+include Capistrano::Helpers::Base
+include Capistrano::Helpers::Puma::Nginx
+
 namespace :puma do
   namespace :nginx do
+    desc 'Get the config needed to add to sudoers for nginx commands'
+    task :sudoers do
+      run_locally do
+        info '---------------ENTRIES FOR SUDOERS (Nginx)---------------------'
+        puts '#---------------ENTRIES FOR SUDOERS (Nginx)---------------------'
+        puts "#{fetch(:user)} ALL=NOPASSWD: /bin/mkdir -p #{fetch(:nginx_log_path)}"
+        puts "#{fetch(:user)} ALL=NOPASSWD: /bin/chown -R #{fetch(:user)}\\:root #{fetch(:nginx_log_path)}"
+        puts "#{fetch(:user)} ALL=NOPASSWD: /bin/chmod 6775 #{fetch(:nginx_log_path)}"
+        puts "#{fetch(:user)} ALL=NOPASSWD: /usr/sbin/service nginx *"
+        puts '#---------------------------------------------------------------'
+        info '---------------------------------------------------------------'
+      end
+      # info "#{fetch(:user)} ALL=NOPASSWD: /bin/chown deploy:root #{monit_monitrc_file}"
+    end
+
     desc 'Generates and uploads nginx configuration for this app to the App server(s)'
     # task :setup, :roles => :app , :except => { :no_release => true } do
     task :setup do
@@ -26,7 +48,10 @@ namespace :puma do
         # create log path
         # /var/log/nginx must be writable by 'deploy' user, usually this can be acomplished by adding the deploy user to
         # the www-data group
-        execute :mkdir, "-p /var/log/nginx/#{fetch(:application)}"
+        execute :sudo, :mkdir, "-p #{fetch(:nginx_log_path)}"
+        execute :sudo, :chown, "-R #{fetch(:user)}:root #{fetch(:nginx_log_path)}"
+        execute :sudo, :chmod, "6775 #{fetch(:nginx_log_path)}"
+        execute :mkdir, "-p #{fetch(:nginx_app_log_path)}"
       end
     end
 

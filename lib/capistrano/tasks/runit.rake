@@ -1,15 +1,20 @@
+require 'capistrano/dsl/base_paths'
+require 'capistrano/dsl/runit_paths'
+require 'capistrano/helpers/base'
+require 'capistrano/helpers/runit'
+
+include Capistrano::DSL::BasePaths
+include Capistrano::DSL::RunitPaths
+include Capistrano::Helpers::Base
+include Capistrano::Helpers::Runit
+
 # require 'capistrano/runit'
 namespace :puma do
   desc 'Setup Puma configuration'
   task :setup do
     on roles(:app) do
-      if test("[ ! -d '#{fetch(:sockets_path)}' ]")
-        execute :mkdir, "-p #{fetch(:sockets_path)}"
-      end
-
-      if test("[ ! -d '#{fetch(:puma_remote_config_folder)}' ]")
-        execute :mkdir, "-p '#{fetch(:puma_remote_config_folder)}'"
-      end
+      execute :mkdir, "-p #{fetch(:sockets_path)}" if test("[ ! -d '#{fetch(:sockets_path)}' ]")
+      execute :mkdir, "-p '#{fetch(:puma_remote_config_folder)}'" if test("[ ! -d '#{fetch(:puma_remote_config_folder)}' ]")
       upload! template_to_s_io(fetch(:puma_config_template)), fetch(:puma_config_file)
     end
   end
@@ -31,8 +36,8 @@ namespace :puma do
           execute :mkdir, "-p '#{runit_service_path(fetch(:puma_runit_service_name))}'"
         end
 
-        upload! template_to_s_io(fetch(:puma_runit_run_template)), runit_service_run_file(fetch(:puma_runit_service_name)) # rubocop:disable Metrics/LineLength
-        upload! template_to_s_io(fetch(:puma_runit_finish_template)), runit_service_finish_file(fetch(:puma_runit_service_name)) # rubocop:disable Metrics/LineLength
+        upload! template_to_s_io(fetch(:puma_runit_run_template)), runit_service_run_config_file(fetch(:puma_runit_service_name)) # rubocop:disable Metrics/LineLength
+        upload! template_to_s_io(fetch(:puma_runit_finish_template)), runit_service_finish_config_file(fetch(:puma_runit_service_name)) # rubocop:disable Metrics/LineLength
 
         # must use quit script for stop as well, to ensure quit and stop performs equally
         if test("[ ! -d '#{runit_service_control_path(fetch(:puma_runit_service_name))}' ]")

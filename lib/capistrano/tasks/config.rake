@@ -11,7 +11,7 @@ namespace :load do
     # Puma Configuration
     set :puma_runit_service_name, 'puma'
     set :puma_workers, 2 # Must use a minimum of 1 worker (cluster mode, else restart/stop fails in the state file?)
-    set :puma_min_threads, 2
+    set :puma_min_threads, 8
     set :puma_max_threads, 8
 
     set :puma_bin, 'bundle exec puma'
@@ -35,7 +35,7 @@ namespace :load do
     set :puma_on_restart_active, true
 
     # Logging to path
-    set :puma_log_path, proc { "/var/log/service/#{fetch(:user)}/#{app_env_folder}/puma" }
+    set :puma_log_path, proc { runit_var_log_service_single_service_path(fetch(:puma_runit_service_name)) }
 
     # Configuration files
     set :puma_config_template, File.join(TemplatePaths.template_base_path, 'puma-config.rb.erb')

@@ -41,7 +41,9 @@ namespace :load do
     set :nginx_uses_ssl, false
     set :nginx_port, 80
 
-    set :nginx_log_path, proc { File.join('/var', 'log', 'nginx', fetch(:application).squish.downcase.gsub(/[\s|-]/, '_')) }
+    set :nginx_log_path, proc { File.join('/var', 'log', 'nginx') }
+
+    set :nginx_app_log_path, proc { File.join(fetch(:nginx_log_path), fetch(:application).squish.downcase.gsub(/[\s|-]/, '_')) }
 
     set :nginx_client_max_body_size, '10M'
 
