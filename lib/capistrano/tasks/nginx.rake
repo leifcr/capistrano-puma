@@ -15,6 +15,7 @@ namespace :puma do
         puts "#{fetch(:user)} ALL=NOPASSWD: /bin/mkdir -p #{fetch(:nginx_log_path)}"
         puts "#{fetch(:user)} ALL=NOPASSWD: /bin/chown -R #{fetch(:user)}\\:root #{fetch(:nginx_log_path)}"
         puts "#{fetch(:user)} ALL=NOPASSWD: /bin/chmod 6775 #{fetch(:nginx_log_path)}"
+        puts "#{fetch(:user)} ALL=NOPASSWD: /bin/chown #{fetch(:user)}\\:root #{fetch(:nginx_sites_enabled_path)}"
         puts "#{fetch(:user)} ALL=NOPASSWD: /usr/sbin/service nginx *"
         puts '#---------------------------------------------------------------'
         info '---------------------------------------------------------------'
@@ -60,6 +61,8 @@ namespace :puma do
       on roles(:app) do |host|
         if test("[ ! -h #{fetch(:nginx_sites_enabled_symlink)} ]")
           info "NGINX: Enabling application #{fetch(:application)} on #{host}"
+          # Make sure deploy user can symlink site
+          execute :sudo, :chown, "#{fetch(:user)}:root #{fetch(:nginx_sites_enabled_path)}"
           execute :ln, "-sf #{fetch(:nginx_remote_config)} #{fetch(:nginx_sites_enabled_symlink)}"
         else
           info "NGINX: Already enabled application #{fetch(:application)} on #{host}"
@@ -72,6 +75,8 @@ namespace :puma do
       on roles(:app) do |host|
         if test("[ -h #{fetch(:nginx_sites_enabled_symlink)} ]")
           info "NGINX: Disabling application #{fetch(:application)} on #{host}"
+          # Make sure deploy user can unsymlink site
+          execute :sudo, :chown, "#{fetch(:user)}:root #{fetch(:nginx_sites_enabled_path)}"
           execute :rm, "-f #{fetch(:nginx_sites_enabled_symlink)}"
         else
           info "NGINX: Already disabled application #{fetch(:application)} on #{host}"
