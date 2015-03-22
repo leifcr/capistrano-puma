@@ -1,6 +1,11 @@
 # Capistrano Recipes for Puma
 
-This gem provides recipes for [Puma](http://puma.io) to setup [runit](smarden.org/runit/), [monit](http://mmonit.com/monit) and [nginx](http://nginx.org) for both running and monitoring puma and a nginx site connected to a puma socket
+This gem provides recipes for [Puma](http://puma.io) to setup [runit](http://smarden.org/runit/), [monit](http://mmonit.com/monit) and [nginx](http://nginx.org) for both running and monitoring puma and a nginx site connected to a puma socket
+
+## Versioning
+
+This gem stays at 3.x for capistrano 3, as it seems logical.
+
 
 ## Usage
 
@@ -11,9 +16,11 @@ Add it to your Gemfile without requiring it
 gem 'capistrano-pumaio'
 ```
 
-In your deploy.rb:
+In your Capfile:
 
 ```ruby
+require 'capistrano/monit'
+require 'capistrano/runit'
 require 'capistrano/puma'
 ```
 
