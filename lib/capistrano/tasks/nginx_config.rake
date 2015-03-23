@@ -52,5 +52,13 @@ namespace :load do
     set :nginx_ssl_client_max_body_size, '10M'
     set :nginx_ssl_public_crt, File.join('/etc', 'certs', 'server.crt')
     set :nginx_ssl_private_key, File.join('/etc', 'certs', 'server.key')
+
+    set :nginx_puma_server_url, proc { "unix:#{fetch(:puma_socket_file)}" }
+    set :nginx_puma_server_timeout, proc { 'fail_timeout=0' }
+
+    # Supply a block of text to add to the nginx config file before hitting puma server (rewrites etc)
+    set :nginx_extra_rules, nil
+    # Same as above but for ssl
+    set :nginx_extra_rules_ssl, nil
   end
 end
