@@ -53,7 +53,6 @@ namespace :puma do
   end
 end
 
-
 after 'monit:setup', 'puma:monit:setup'
 # after 'puma:monit:setup', 'puma:monit:enable'
 after 'puma:monit:enable', 'monit:reload'
