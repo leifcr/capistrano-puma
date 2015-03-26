@@ -3,7 +3,6 @@ require 'active_support/core_ext/string/filters'
 require 'capistrano/helpers/puma/template_paths'
 require 'capistrano/helpers/base'
 include Capistrano::Helpers::Base
-include Capistrano::Helpers::Puma
 
 namespace :load do
   task :defaults do
@@ -24,13 +23,13 @@ namespace :load do
     set :server_names, proc { app_env_underscore }
 
     # Path to the nginx erb template to be parsed before uploading to remote
-    set :nginx_config_template, File.join(TemplatePaths.template_base_path, 'nginx', 'application.conf.erb') # rubocop:disable Metrics/LineLength
+    set :nginx_config_template, File.join(Capistrano::Helpers::Puma::TemplatePaths.template_base_path, 'nginx', 'application.conf.erb') # rubocop:disable Metrics/LineLength
 
     # Path to where your remote config will reside (I use a directory sites inside conf)
     set :nginx_remote_config, proc { shared_path.join('config', "nginx_#{app_env_underscore}.conf") }
 
     # Path to local htpasswd template file
-    set :nginx_htpasswd_template, File.join(TemplatePaths.template_base_path, 'nginx', 'htpasswd.erb')
+    set :nginx_htpasswd_template, File.join(Capistrano::Helpers::Puma::TemplatePaths.template_base_path, 'nginx', 'htpasswd.erb')
 
     # Path to remote htpasswd file
     set :nginx_remote_htpasswd, proc { shared_path.join('config', '.htpasswd') }

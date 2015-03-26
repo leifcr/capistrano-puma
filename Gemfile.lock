@@ -1,10 +1,3 @@
-PATH
-  remote: ../capistrano-monit_runit
-  specs:
-    capistrano-monit_runit (3.0.0)
-      activesupport (>= 3.0)
-      capistrano (~> 3.4)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -20,6 +13,9 @@ GEM
       i18n
       rake (>= 10.0.0)
       sshkit (~> 1.3)
+    capistrano-monit_runit (3.0.1)
+      activesupport (>= 3.0)
+      capistrano (~> 3.4)
     colorize (0.7.5)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
@@ -82,5 +78,5 @@ DEPENDENCIES
   activesupport (>= 3.0)
   bundler (~> 1.7)
   capistrano (~> 3.4)
-  capistrano-monit_runit!
+  capistrano-monit_runit (~> 3.0.1)
   jeweler (~> 2.0)

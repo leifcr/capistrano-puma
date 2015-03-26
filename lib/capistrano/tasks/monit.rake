@@ -22,7 +22,7 @@ namespace :puma do
     task :enable do
       on roles(:app) do |host|
         info "MONIT: Enabling service for puma for application #{fetch(:application)} on #{host}"
-        enable_service(available_configuration_file )
+        enable_monitor(available_configuration_file )
       end
     end
 
@@ -30,7 +30,7 @@ namespace :puma do
     task :disable do
       on roles(:app) do |host|
         info "MONIT: Disabling service for puma for application #{fetch(:application)} on #{host}"
-        disable_service(available_configuration_file)
+        disable_monitor(available_configuration_file)
       end
     end
 

@@ -4,26 +4,34 @@ This gem provides recipes for [Puma](http://puma.io) to setup [runit](http://sma
 
 ## Versioning
 
-This gem stays at 3.x for capistrano 3, as it seems logical.
+Use 3.x for capistrano 3
 
+For capistrano2, see the capistrano2 branch (will not be updated)
 
 ## Usage
 
 
-Add it to your Gemfile without requiring it
+Add it to your Gemfile in the development section.
 
 ```ruby
-gem 'capistrano-pumaio'
+gem 'capistrano-pumaio', require: false
 ```
 
-In your Capfile:
+Now run ```bundle install```
+
+Add this to your Capfile:
 
 ```ruby
-require 'capistrano/monit'
-require 'capistrano/runit'
 require 'capistrano/puma'
 ```
 
+Create a new file in in /etc/sudoers.d/ and add the output of the following commands:
+
+```
+cap production runit:sudoers
+cap production monit:sudoers
+cap production puma:nginx:sudoers
+```
 
 ### Monit
 
@@ -115,7 +123,7 @@ See nginx.rb for configuration options.
 #### Notes when using nginx
 
 
-puma:nginx:setup is setup to run automatically after deploy:setup, and you will be asked if you want to enable the site.
+You have to run ``` cap production puma:nginx:setup ``` to automatically setup nginx.
 
 If you do not enable the site during setup, be sure to run the following two commands when you want to enable your site:
 

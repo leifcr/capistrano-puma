@@ -98,7 +98,10 @@ namespace :puma do
         # have to use force-stop on failed stop, since puma might not terminate properly depending on current
         # 'slow' clients.
         # will wait 30 seconds for puma to shut down, to allow it to serve any on-going requests
-        control_service(fetch(:puma_runit_service_name), 'force-stop', '-w 30')
+        begin
+          control_service(fetch(:puma_runit_service_name), 'force-stop', '-w 30')
+        rescue
+        end
       end
     end
 

@@ -5,6 +5,8 @@ module Capistrano
       # Module Monit provides helpers for Monit/Puma combination
       ##
       module Monit
+        module_function
+
         def available_configuration_with_path
           File.join(fetch(:monit_available_path), "#{fetch(:puma_runit_service_name)}.conf")
         end
