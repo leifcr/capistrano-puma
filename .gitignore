@@ -23,3 +23,5 @@ pkg/*
 .ruby-version
 .ruby-gemset
 .rvmrc
+
+.rake_tasks

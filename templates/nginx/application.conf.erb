@@ -1,35 +1,34 @@
 # Nginx configuration
-# <% c = Capistrano::BaseHelper::get_capistrano_instance %>
-# <%= "#{c.fetch(:application)} running as #{c.fetch(:user)} in environment #{Capistrano::BaseHelper.environment}" %>
-# <% 
-  upstream_name     = "#{c.fetch(:application)}_#{Capistrano::BaseHelper.environment}_app_server"
-  upstream_name_ssl = "#{c.fetch(:application)}_#{Capistrano::BaseHelper.environment}_app_server_ssl"
+# <%= "#{fetch(:application)} running as #{fetch(:user)} in environment #{environment}" %>
+# <%
+  upstream_name     = "#{fetch(:application)}_#{environment}_app_server"
+  upstream_name_ssl = "#{fetch(:application)}_#{environment}_app_server_ssl"
   %>
 #
 
 upstream <%= upstream_name %> {
-  server unix:<%= File.join("#{c.fetch(:shared_path)}","sockets", "puma.sock") %> fail_timeout=0;
+  server <%= fetch(:nginx_puma_server_url) %> <%= fetch(:nginx_puma_server_timeout) %>;
 }
 
-<% if c.fetch(:nginx_uses_http) %>
+<% if fetch(:nginx_uses_http) %>
 #
 # HTTP server configuration
 #
 server {
-  listen <%= c.fetch(:nginx_port) %>;
-  client_max_body_size <%= c.fetch(:nginx_client_max_body_size) %>;
-  server_name <%= c.fetch(:server_names) %>;
+  listen <%= fetch(:nginx_port) %>;
+  client_max_body_size <%= fetch(:nginx_client_max_body_size) %>;
+  server_name <%= fetch(:server_names) %>;
 
   # ~2 seconds is often enough for most folks to parse HTML/CSS and
   # retrieve needed images/icons/frames, connections are cheap in
   # nginx so increasing this is generally safe...
   # 8 seconds might be needed for some mobile devs
-  keepalive_timeout 8; 
+  keepalive_timeout 8;
 
   # path for static files
-  root <%= c.fetch(:deploy_to) %>/current/public;
-  access_log <%= c.fetch(:nginx_log_path) %>/<%= Capistrano::BaseHelper.environment %>.access.log;
-  error_log  <%= c.fetch(:nginx_log_path) %>/<%= Capistrano::BaseHelper.environment %>.error.log info;
+  root <%= fetch(:deploy_to) %>/current/public;
+  access_log <%= fetch(:nginx_app_log_path) %>/<%= environment %>.access.log;
+  error_log  <%= fetch(:nginx_app_log_path) %>/<%= environment %>.error.log info;
 
   # this rewrites all the requests to the maintenance.html
   # page if it exists in the doc root. This is for capistrano's
@@ -40,9 +39,9 @@ server {
   }
 
   location / {
-  <% if c.fetch(:nginx_use_simple_auth) %>
-    auth_basic "<%= c.fetch(:nginx_simple_auth_message) %>";
-    auth_basic_user_file <%= c.fetch(:nginx_remote_htpasswd) %>;
+  <% if fetch(:nginx_use_simple_auth) %>
+    auth_basic "<%= fetch(:nginx_simple_auth_message) %>";
+    auth_basic_user_file <%= fetch(:nginx_remote_htpasswd) %>;
   <% end %>
 
     # needed to forward user's IP address to rails
@@ -58,7 +57,7 @@ server {
       gzip_static on;
       expires max;
       add_header Cache-Control public;
-    }        
+    }
 
     # Serve images outside the asset path
     # Now this supposedly should work as it gets the filenames with querystrings that Rails provides.
@@ -78,24 +77,7 @@ server {
       break;
     }
 
-    # check for index.html for directory index
-    # if its there on the filesystem then rewite
-    # the url to add /index.html to the end of it
-    # and then break to send it to the next config rules.
-    if (-f $request_filename/index.html) {
-      rewrite (.*) $1/index.html break;
-    }
-
-    # this is the meat of the rails page caching config
-    # it adds .html to the end of the url and then checks
-    # the filesystem for that file. If it exists, then we
-    # rewite the url to have explicit .html on the end
-    # and then send it on its way to the next config rule.
-    # if there is no file on the fs then it sets all the
-    # necessary headers and proxies to our upstream mongrels
-    if (-f $request_filename.html) {
-      rewrite (.*) $1.html break;
-    }
+    <%= fetch(:nginx_extra_rules) unless fetch(:nginx_extra_rules).nil? %>
 
     if (!-f $request_filename) {
       proxy_pass http://<%= upstream_name %>;
@@ -106,34 +88,34 @@ server {
   # Rails error pages
   error_page 500 502 503 504 /500.html;
   location = /500.html {
-    root   <%= c.fetch(:deploy_to) %>/current/public;
+    root   <%= fetch(:deploy_to) %>/current/public;
   }
 }
 <% end %>
 
-<% if c.fetch(:nginx_uses_ssl) %>
+<% if fetch(:nginx_uses_ssl) %>
 #
 # HTTPs server configuration
 #
 upstream <%= upstream_name_ssl %> {
-  server unix:<%= File.join("#{c.fetch(:shared_path)}","sockets", "puma.sock") %> fail_timeout=0;
+  server <%= fetch(:nginx_puma_server_url) %> <%= fetch(:nginx_puma_server_timeout) %>;
 }
 
 # This server is setup for ssl. Uncomment if
 # you are using ssl as well as port 80.
 server {
-  listen <%= c.fetch(:nginx_ssl_port) %>;
+  listen <%= fetch(:nginx_ssl_port) %>;
   client_max_body_size 500M;
-  server_name <%= c.fetch(:server_names) %>;
+  server_name <%= fetch(:server_names) %>;
   ssl                     on;
-  ssl_certificate         <%= c.fetch(:nginx_ssl_public_crt) %>;
-  ssl_certificate_key     <%= c.fetch(:nginx_ssl_private_key) %>;
+  ssl_certificate         <%= fetch(:nginx_ssl_public_crt) %>;
+  ssl_certificate_key     <%= fetch(:nginx_ssl_private_key) %>;
   ssl_session_timeout     5m;
-  client_max_body_size <%= c.fetch(:nginx_ssl_client_max_body_size) %>;
+  client_max_body_size <%= fetch(:nginx_ssl_client_max_body_size) %>;
 
-  root <%= c.fetch(:deploy_to) %>/current/public;
-  access_log <%= c.fetch(:nginx_log_path) %>/<%= Capistrano::BaseHelper.environment %>_ssl.access.log;
-  error_log  <%= c.fetch(:nginx_log_path) %>/<%= Capistrano::BaseHelper.environment %>_ssl.error.log info;
+  root <%= fetch(:deploy_to) %>/current/public;
+  access_log <%= fetch(:nginx_app_log_path) %>/<%= environment %>_ssl.access.log;
+  error_log  <%= fetch(:nginx_app_log_path) %>/<%= environment %>_ssl.error.log info;
 
   # this rewrites all the requests to the maintenance.html
   # page if it exists in the doc root. This is for capistrano's
@@ -144,9 +126,9 @@ server {
   }
 
   location / {
-  <% if c.fetch(:nginx_ssl_use_simple_auth) %>
-    auth_basic "<%= c.fetch(:nginx_simple_auth_message) %>";
-    auth_basic_user_file <%= c.fetch(:nginx_remote_htpasswd) %>;
+  <% if fetch(:nginx_ssl_use_simple_auth) %>
+    auth_basic "<%= fetch(:nginx_simple_auth_message) %>";
+    auth_basic_user_file <%= fetch(:nginx_remote_htpasswd) %>;
   <% end %>
 
     # needed to forward user's IP address to rails
@@ -167,7 +149,7 @@ server {
       gzip_static on;
       expires max;
       add_header Cache-Control public;
-    }        
+    }
 
     # Serve images outside the asset path
     # Now this supposedly should work as it gets the filenames with querystrings that Rails provides.
@@ -187,24 +169,7 @@ server {
       break;
     }
 
-    # check for index.html for directory index
-    # if its there on the filesystem then rewite
-    # the url to add /index.html to the end of it
-    # and then break to send it to the next config rules.
-    if (-f $request_filename/index.html) {
-      rewrite (.*) $1/index.html break;
-    }
-
-    # this is the meat of the rails page caching config
-    # it adds .html to the end of the url and then checks
-    # the filesystem for that file. If it exists, then we
-    # rewite the url to have explicit .html on the end
-    # and then send it on its way to the next config rule.
-    # if there is no file on the fs then it sets all the
-    # necessary headers and proxies to our upstream mongrels
-    if (-f $request_filename.html) {
-      rewrite (.*) $1.html break;
-    }
+    <%= fetch(:nginx_extra_rules_ssl) unless fetch(:nginx_extra_rules_ssl).nil? %>
 
     if (!-f $request_filename) {
       proxy_pass http://<%= upstream_name_ssl %>;
@@ -214,7 +179,7 @@ server {
 
   error_page   500 502 503 504  /500.html;
   location = /500.html {
-    root   <%= c.fetch(:deploy_to) %>/current/public;
+    root   <%= fetch(:deploy_to) %>/current/public;
   }
 }
 <% end %>

@@ -1,16 +1,15 @@
 # Monit configuration for Puma
-# <% c = Capistrano::BaseHelper::get_capistrano_instance %>
-# <%= "#{c.fetch(:application)} running as #{c.fetch(:user)} in environment #{Capistrano::BaseHelper.environment}" %>
+# <%= "#{fetch(:application)} running as #{fetch(:user)} in environment #{environment}" %>
 #
-# Service name: <%= c.fetch(:puma_monit_service_name) %>
+# Service name: <%= fetch(:puma_monit_service_name) %>
 #
-check process <%= c.fetch(:puma_monit_service_name) %>
-    with pidfile <%= c.fetch(:puma_pid_file) %>
-    start program = "<%= c.fetch(:puma_monit_start_command) %>"
-    stop program = "<%= c.fetch(:puma_monit_stop_command) %>"
-    if mem is greater than <%= c.fetch(:puma_monit_memory_alert_threshold) %> then alert
-    if mem is greater than <%= c.fetch(:puma_monit_memory_restart_threshold) %> then restart
-    if cpu is greater than <%= c.fetch(:puma_monit_cpu_alert_threshold) %> then alert         
-    if cpu is greater than <%= c.fetch(:puma_monit_cpu_restart_threshold) %> then restart
+check process <%= fetch(:puma_monit_service_name) %>
+    with pidfile <%= fetch(:puma_pid_file) %>
+    start program = "<%= fetch(:puma_monit_start_command) %>"
+    stop program = "<%= fetch(:puma_monit_stop_command) %>"
+    if mem is greater than <%= fetch(:puma_monit_memory_alert_threshold) %> then alert
+    if mem is greater than <%= fetch(:puma_monit_memory_restart_threshold) %> then restart
+    if cpu is greater than <%= fetch(:puma_monit_cpu_alert_threshold) %> then alert
+    if cpu is greater than <%= fetch(:puma_monit_cpu_restart_threshold) %> then restart
 
-    group <%= c.fetch(:monit_application_group_name) %>
+    group <%= fetch(:monit_application_group_name) %>

@@ -1,0 +1,7 @@
+#!/bin/bash --login
+# Announcing stop/abort
+echo "<%= "User: #{fetch(:user)} Application: #{fetch(:application)} Service: #{fetch(:puma_runit_service_name)}" %> stopping..."
+
+# The command used when puma is asked to quit/stop/exit, overridden here, as runit normal signal will not work with puma
+cd '<%= current_path %>'
+RAILS_ENV=<%= environment %> exec <%= fetch(:puma_control) %> -S <%= fetch(:puma_state_file) %> stop

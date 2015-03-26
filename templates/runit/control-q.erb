@@ -1,8 +1,0 @@
-#!/bin/bash --login
-<% c = Capistrano::BaseHelper.get_capistrano_instance %>
-# Announcing stop/abort
-echo "<%= "User: #{c.fetch(:user)} Application: #{c.fetch(:application)} Service: #{c.fetch(:puma_runit_service_name)}" %> stopping..."
-
-# The command used when puma is asked to quit/stop/exit, overridden here, as runit normal signal will not work with puma
-cd '<%= c.current_path %>'
-RAILS_ENV=<%= Capistrano::BaseHelper.environment %> exec <%= c.fetch(:puma_control) %> -S <%= c.fetch(:puma_state_file) %> stop
