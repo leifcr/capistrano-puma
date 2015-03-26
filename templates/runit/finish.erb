@@ -89,7 +89,7 @@ echo $NOW > last_finish
 
 # Remove the restart_count file if <%= "#{auto_restart_count_clear_interval}" %> seconds
 # have elapsed since the last automatic restart.
-if test $INTERVAL -gt $<%= "#{auto_restart_count_clear_interval}" %>
+if test $INTERVAL -gt "$<%= "#{auto_restart_count_clear_interval}" %>"
 then
     echo "NOTICE: <%= "User: #{fetch(:user)} Application: #{fetch(:application)} Service: #{fetch(:puma_runit_service_name)}" %>"
     echo "The last automatic restart was $INTERVAL seconds ago."
@@ -109,7 +109,7 @@ fi
 echo $RESTART_COUNT > restart_count
 
 # Check that we have not exceeded the maximum number of automatic restarts
-if test $RESTART_COUNT -gt $<%= "#{max_auto_restart_count}" %>
+if test $RESTART_COUNT -gt "$<%= "#{max_auto_restart_count}" %>"
 then
     echo "WARNING: <%= "User: #{fetch(:user)} Application: #{fetch(:application)} Service: #{fetch(:puma_runit_service_name)}" %>"
     echo "Reached the limit of $<%= "#{max_auto_restart_count}" %> automatic restarts."
