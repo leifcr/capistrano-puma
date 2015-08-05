@@ -1,7 +1,5 @@
-require 'capistrano/helpers/base'
-require 'capistrano/helpers/monit'
+require 'capistrano/monit'
 require 'capistrano/helpers/puma/monit'
-require 'capistrano/dsl/base_paths'
 include Capistrano::DSL::BasePaths
 include Capistrano::Helpers::Base
 include Capistrano::Helpers::Monit

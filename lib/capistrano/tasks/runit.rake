@@ -1,7 +1,4 @@
-require 'capistrano/dsl/base_paths'
-require 'capistrano/dsl/runit_paths'
-require 'capistrano/helpers/base'
-require 'capistrano/helpers/runit'
+require 'capistrano/runit'
 
 include Capistrano::DSL::BasePaths
 include Capistrano::DSL::RunitPaths
