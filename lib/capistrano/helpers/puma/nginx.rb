@@ -1,7 +1,12 @@
 module Capistrano
   module Helpers
     module Puma
+      ##
+      # Module Nginx provides helper functions for nginx configuration
+      ##
       module Nginx
+        module_function
+
         def default_pw_generator
           pw = SecureRandom.random_number(36**10).to_s(36).rjust(10, '0')
           info "Random password generated: #{pw}"

@@ -1,20 +1,19 @@
 require 'capistrano/helpers/base'
 require 'capistrano/helpers/monit'
-require 'capistrano/helpers/puma/monit'
 require 'capistrano/dsl/base_paths'
-include Capistrano::DSL::BasePaths
-include Capistrano::Helpers::Base
-include Capistrano::Helpers::Monit
-include Capistrano::Helpers::Puma::Monit
+require 'capistrano/helpers/puma/monit'
 
 namespace :puma do
+  include Capistrano::DSL::BasePaths
+  include Capistrano::Helpers::Base
+  include Capistrano::Helpers::Monit
   namespace :monit do
     desc 'MONIT: Setup Puma service'
     task :setup do
       on roles(:app) do |host|
         info "MONIT: Uploading configuration for puma for #{fetch(:application)} on #{host}"
         # Upload configuration
-        upload! template_to_s_io(fetch(:puma_monit_config_template)), available_configuration_with_path
+        upload! template_to_s_io(fetch(:puma_monit_config_template)), Capistrano::Helpers::Puma::Monit.available_configuration_with_path
       end
     end
 
@@ -22,7 +21,7 @@ namespace :puma do
     task :enable do
       on roles(:app) do |host|
         info "MONIT: Enabling service for puma for application #{fetch(:application)} on #{host}"
-        enable_monitor(available_configuration_file )
+        enable_monitor(Capistrano::Helpers::Puma::Monit.available_configuration_file)
       end
     end
 
@@ -30,7 +29,7 @@ namespace :puma do
     task :disable do
       on roles(:app) do |host|
         info "MONIT: Disabling service for puma for application #{fetch(:application)} on #{host}"
-        disable_monitor(available_configuration_file)
+        disable_monitor(Capistrano::Helpers::Puma::Monit.available_configuration_file)
       end
     end
 

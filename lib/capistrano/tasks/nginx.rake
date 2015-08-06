@@ -10,7 +10,6 @@ namespace :puma do
     desc 'Get the config needed to add to sudoers for nginx commands'
     task :sudoers do
       run_locally do
-        info '---------------ENTRIES FOR SUDOERS (Nginx)---------------------'
         puts '#---------------ENTRIES FOR SUDOERS (Nginx)---------------------'
         puts "#{fetch(:user)} ALL=NOPASSWD: /bin/mkdir -p #{fetch(:nginx_log_path)}"
         puts "#{fetch(:user)} ALL=NOPASSWD: /bin/chown -R #{fetch(:user)}\\:root #{fetch(:nginx_log_path)}"
@@ -18,7 +17,6 @@ namespace :puma do
         puts "#{fetch(:user)} ALL=NOPASSWD: /bin/chown #{fetch(:user)}\\:root #{fetch(:nginx_sites_enabled_path)}"
         puts "#{fetch(:user)} ALL=NOPASSWD: /usr/sbin/service nginx *"
         puts '#---------------------------------------------------------------'
-        info '---------------------------------------------------------------'
       end
       # info "#{fetch(:user)} ALL=NOPASSWD: /bin/chown deploy:root #{monit_monitrc_file}"
     end
@@ -117,3 +115,5 @@ end
 #     nginx.restart # must restart after enable for nginx to pickup new site
 #   end
 # end
+
+after 'sudoers', 'puma:nginx:sudoers'

@@ -3,13 +3,12 @@ require 'capistrano/dsl/runit_paths'
 require 'capistrano/helpers/base'
 require 'capistrano/helpers/runit'
 
-include Capistrano::DSL::BasePaths
-include Capistrano::DSL::RunitPaths
-include Capistrano::Helpers::Base
-include Capistrano::Helpers::Runit
-
 # require 'capistrano/runit'
 namespace :puma do
+  include Capistrano::DSL::BasePaths
+  include Capistrano::DSL::RunitPaths
+  include Capistrano::Helpers::Base
+  include Capistrano::Helpers::Runit
   desc 'Setup Puma configuration'
   task :setup do
     on roles(:app) do
