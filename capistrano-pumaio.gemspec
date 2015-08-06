@@ -55,20 +55,20 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<capistrano>, ["~> 3.4"])
       s.add_runtime_dependency(%q<activesupport>, [">= 3.0"])
-      s.add_runtime_dependency(%q<capistrano-monit_runit>, ["~> 3.0.1"])
+      s.add_runtime_dependency(%q<capistrano-monit_runit>, ["~> 3.0.2"])
       s.add_development_dependency(%q<bundler>, ["~> 1.7"])
       s.add_development_dependency(%q<jeweler>, ["~> 2.0"])
     else
       s.add_dependency(%q<capistrano>, ["~> 3.4"])
       s.add_dependency(%q<activesupport>, [">= 3.0"])
-      s.add_dependency(%q<capistrano-monit_runit>, ["~> 3.0.1"])
+      s.add_dependency(%q<capistrano-monit_runit>, ["~> 3.0.2"])
       s.add_dependency(%q<bundler>, ["~> 1.7"])
       s.add_dependency(%q<jeweler>, ["~> 2.0"])
     end
   else
     s.add_dependency(%q<capistrano>, ["~> 3.4"])
     s.add_dependency(%q<activesupport>, [">= 3.0"])
-    s.add_dependency(%q<capistrano-monit_runit>, ["~> 3.0.1"])
+    s.add_dependency(%q<capistrano-monit_runit>, ["~> 3.0.2"])
     s.add_dependency(%q<bundler>, ["~> 1.7"])
     s.add_dependency(%q<jeweler>, ["~> 2.0"])
   end
