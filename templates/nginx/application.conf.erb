@@ -105,13 +105,12 @@ upstream <%= upstream_name_ssl %> {
 # you are using ssl as well as port 80.
 server {
   listen <%= fetch(:nginx_ssl_port) %>;
-  client_max_body_size 500M;
   server_name <%= fetch(:server_names) %>;
   ssl                     on;
   ssl_certificate         <%= fetch(:nginx_ssl_public_crt) %>;
   ssl_certificate_key     <%= fetch(:nginx_ssl_private_key) %>;
   ssl_session_timeout     5m;
-  client_max_body_size <%= fetch(:nginx_ssl_client_max_body_size) %>;
+  client_max_body_size    <%= fetch(:nginx_ssl_client_max_body_size) %>;
 
   root <%= fetch(:deploy_to) %>/current/public;
   access_log <%= fetch(:nginx_app_log_path) %>/<%= environment %>_ssl.access.log;
