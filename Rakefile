@@ -18,7 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = 'https://github.com/leifcr/capistrano-puma'
   gem.license = 'MIT'
   gem.summary = 'Capistrano recipes for puma using runit and monit'
-  gem.description = 'Capistrano recipes for puma using runit and monit. Includes nginx recipes for the app server.'
+  gem.description = 'Capistrano recipes for puma using runit and monit.'
   gem.email = 'leifcr@gmail.com'
   gem.authors = ['Leif Ringstad']
   gem.files.exclude '.ruby-*'

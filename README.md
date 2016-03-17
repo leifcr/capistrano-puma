@@ -1,6 +1,6 @@
 # Capistrano Recipes for Puma
 
-This gem provides recipes for [Puma](http://puma.io) to setup [runit](http://smarden.org/runit/), [monit](http://mmonit.com/monit) and [nginx](http://nginx.org) for both running and monitoring puma and a nginx site connected to a puma socket
+This gem provides recipes for [Puma](http://puma.io) to setup [runit](http://smarden.org/runit/) and [monit](http://mmonit.com/monit) for both running and monitoring puma
 
 ## Versioning
 
@@ -23,14 +23,6 @@ Add this to your Capfile:
 
 ```ruby
 require 'capistrano/puma'
-```
-
-Create a new file in in /etc/sudoers.d/ and add the output of the following commands:
-
-```
-cap production runit:sudoers
-cap production monit:sudoers
-cap production puma:nginx:sudoers
 ```
 
 ### Monit
@@ -98,40 +90,9 @@ before  "monit:monitor",   "puma:runit:restart"
 
 ### nginx
 
-#### Specific to puma and nginx for the application:
+This has been removed, because it is better practice to setup nginx should as part of your infrastructure.
 
-```ruby
-cap puma:nginx:disable          # Disable nginx site for the application
-cap puma:nginx:enable           # Enable nginx site for the application
-cap puma:nginx:purge            # Purge nginx site config for the application
-cap puma:nginx:setup            # Parses and uploads nginx configuration for this app.
-```
-
-#### Global nginx commands
-
-```ruby
-cap nginx:restart               # Restart nginx
-cap nginx:start                 # Start nginx
-cap nginx:status                # Show nginx status
-cap nginx:stop                  # Stop nginx
-```
-
-#### Configuration for nginx
-
-See nginx.rb for configuration options.
-
-#### Notes when using nginx
-
-
-You have to run ``` cap production puma:nginx:setup ``` to automatically setup nginx.
-
-If you do not enable the site during setup, be sure to run the following two commands when you want to enable your site:
-
-```ruby
-cap puma:nginx:enable
-cap nginx:restart
-```
-
+Most likely you have one or more load balancer and several app servers.
 
 ## Configuration of Monit/Runit
 

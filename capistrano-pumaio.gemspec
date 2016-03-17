@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.authors = ["Leif Ringstad"]
   s.date = "2015-10-28"
-  s.description = "Capistrano recipes for puma using runit and monit. Includes nginx recipes for the app server."
+  s.description = "Capistrano recipes for puma using runit and monit."
   s.email = "leifcr@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE",
@@ -27,17 +27,12 @@ Gem::Specification.new do |s|
     "VERSION",
     "capistrano-pumaio.gemspec",
     "lib/capistrano/helpers/puma/monit.rb",
-    "lib/capistrano/helpers/puma/nginx.rb",
     "lib/capistrano/helpers/puma/template_paths.rb",
     "lib/capistrano/puma.rb",
     "lib/capistrano/tasks/config.rake",
     "lib/capistrano/tasks/monit.rake",
-    "lib/capistrano/tasks/nginx.rake",
-    "lib/capistrano/tasks/nginx_config.rake",
     "lib/capistrano/tasks/runit.rake",
     "templates/monit/puma.conf.erb",
-    "templates/nginx/application.conf.erb",
-    "templates/nginx/htpasswd.erb",
     "templates/puma-config.rb.erb",
     "templates/runit/control/q.erb",
     "templates/runit/finish.erb",
@@ -73,4 +68,3 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<jeweler>, ["~> 2.0"])
   end
 end
-
