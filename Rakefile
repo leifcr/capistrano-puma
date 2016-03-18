@@ -11,8 +11,8 @@ rescue Bundler::BundlerError => e
 end
 require 'rake'
 
-require 'jeweler'
-Jeweler::Tasks.new do |gem|
+require 'juwelier'
+Juwelier::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = 'capistrano-pumaio'
   gem.homepage = 'https://github.com/leifcr/capistrano-puma'
@@ -26,7 +26,7 @@ Jeweler::Tasks.new do |gem|
   gem.files.exclude '.rubocop.yml'
   # dependencies defined in Gemfile
 end
-Jeweler::RubygemsDotOrgTasks.new
+Juwelier::RubygemsDotOrgTasks.new
 
 # require 'rdoc/task'
 # Rake::RDocTask.new do |rdoc|
