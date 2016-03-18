@@ -6,5 +6,5 @@ gem 'capistrano-monit_runit', '~> 3.1.0'
 
 group :development do
   gem 'bundler', '~> 1.7'
-  gem 'jeweler', '~> 2.0'
+  gem 'juwelier'
 end

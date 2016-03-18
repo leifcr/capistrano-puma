@@ -31,7 +31,8 @@ GEM
     hashie (3.4.3)
     highline (1.7.8)
     i18n (0.7.0)
-    jeweler (2.0.1)
+    json (1.8.3)
+    juwelier (2.1.0)
       builder
       bundler (>= 1.0)
       git (>= 1.2.5)
@@ -40,7 +41,6 @@ GEM
       nokogiri (>= 1.5.10)
       rake
       rdoc
-    json (1.8.3)
     jwt (1.5.1)
     mini_portile2 (2.0.0)
     minitest (5.8.4)
@@ -77,7 +77,7 @@ DEPENDENCIES
   bundler (~> 1.7)
   capistrano (~> 3.4)
   capistrano-monit_runit (~> 3.1.0)
-  jeweler (~> 2.0)
+  juwelier
 
 BUNDLED WITH
-   1.10.6
+   1.11.2
