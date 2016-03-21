@@ -176,3 +176,5 @@ after 'deploy:updated', 'puma:runit:enable'
 before 'puma:runit:setup', 'puma:flush_sockets'
 before 'puma:runit:setup', 'puma:setup'
 before 'puma:runit:quit', 'puma:runit:stop'
+
+before 'runit:enable', 'puma:runit:enable'

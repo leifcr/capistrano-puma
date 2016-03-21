@@ -59,6 +59,8 @@ after 'puma:monit:enable', 'monit:reload'
 before 'puma:monit:disable', 'puma:monit:unmonitor'
 after 'puma:monit:disable', 'monit:reload'
 
+before 'monit:enable', 'puma:monit:enable'
+
 # start service after update in case it has not been stopped
 # This shouldn't be necessary, as monit should pick up a non-running service.
 # Starting it here might trigger double starting if monit is triggered simultaniously.
