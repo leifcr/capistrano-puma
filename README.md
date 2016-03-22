@@ -25,6 +25,10 @@ Add this to your Capfile:
 require 'capistrano/puma'
 ```
 
+### Roles:
+
+Capistrano-pumaio targets ```:app``` roles by default.
+
 ### Monit
 
 ```ruby
