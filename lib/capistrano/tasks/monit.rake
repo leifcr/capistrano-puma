@@ -38,7 +38,7 @@ namespace :puma do
       task cmd.to_sym do
         on roles(:app) do |host|
           info "MONIT: #{cmd} #{fetch(:puma_monit_service_name)} on #{host}"
-          command_monit(cmd, fetch(:puma_monit_service_name))
+          command_monit_service(cmd, fetch(:puma_monit_service_name))
         end
       end
     end
