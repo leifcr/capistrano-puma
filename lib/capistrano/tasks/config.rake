@@ -27,8 +27,10 @@ namespace :load do
     # This must be set to false if phased restarts should be used
     set :puma_use_preload_app, false
 
-    set :pruma_prune_bundler, true
-
+    set :pruma_prune_bundler, false
+    set :puma_before_fork, nil
+    set :puma_on_worker_boot, nil
+    set :puma_on_restart, nil
     set :puma_activate_control_app, true
 
     set :puma_on_restart_active, true

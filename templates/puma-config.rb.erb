@@ -15,12 +15,25 @@ environment '<%= "#{environment}" %>'
 <% end %>
 
 <% if fetch(:pruma_prune_bundler) %>
-# TODO: prune_bundler
+prune_bundler
 <% end %>
 
 directory '<%= current_path %>'
 
-# TODO - fix restart block!
-# <%= "on_restart do"              if fetch(:puma_on_restart_active) %>
-# <%= "  puts \"Restarting puma\"" if fetch(:puma_on_restart_active) %>
-# <%= "end"                        if fetch(:puma_on_restart_active) %>
+<% if fetch(:puma_before_fork) != nil %>
+before_fork do
+<%= fetch(:puma_before_fork) %>
+end
+<% end %>
+
+<% if fetch(:puma_on_worker_boot) != nil %>
+on_worker_boot do
+<%= fetch(:puma_on_worker_boot) %>
+end
+<% end %>
+
+<% if fetch(:puma_on_restart) != nil %>
+on_restart do
+<%= fetch(:puma_on_restart) %>
+end
+<% end %>
