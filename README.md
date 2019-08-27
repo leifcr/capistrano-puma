@@ -1,10 +1,10 @@
-# Not maintained!
-
-This is no longer maintained, as deployment methods have changed the last years. (Kubernetes, docker, etc)
-
 # Capistrano Recipes for Puma
 
 This gem provides recipes for [Puma](http://puma.io) to setup [runit](http://smarden.org/runit/) and [monit](http://mmonit.com/monit) for both running and monitoring puma
+
+## Not maintained!
+
+This is no longer maintained, as deployment methods have changed the last years. (Kubernetes, docker, etc)
 
 ## Versioning
 
